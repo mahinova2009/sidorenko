@@ -109,7 +109,13 @@
 <script>
 const form = document.getElementById('registrationForm');
 const formMessage = document.getElementById('formMessage');
+const chatIdField = document.getElementById('chat_id');
 
+// Берём chat_id из URL
+const urlParams = new URLSearchParams(window.location.search);
+const chat_id = urlParams.get('chat_id') || '';
+chatIdField.value = chat_id;
+  
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
     formMessage.textContent = '';
@@ -118,7 +124,8 @@ form.addEventListener('submit', async (e) => {
     const data = {
         fullName: form.fullName.value.trim(),
         email: form.email.value.trim(),
-        phone: form.phone.value.trim()
+        phone: form.phone.value.trim(),
+        chat_id: chatIdField.value
     };
 
     if (!data.fullName || !data.email || !data.phone) {
@@ -141,6 +148,7 @@ form.addEventListener('submit', async (e) => {
             formMessage.textContent = 'Данные успешно отправлены! ✅';
             formMessage.classList.add('success');
             form.reset();
+            chatIdField.value = chat_id;
         } else {
             const resultText = await response.text();
             formMessage.textContent = `Ошибка при отправке: ${response.status}. ${resultText}`;
