@@ -117,10 +117,11 @@ const chatIdField = document.getElementById('chat_id');
 
 // Берём chat_id из URL
 const urlParams = new URLSearchParams(window.location.search);
-chatIdField.value = urlParams.get('chat_id') || '';
+const chat_id = urlParams.get('chat_id') || '';
+chatIdField.value = chat_id;
 
 form.addEventListener('submit', async (e) => {
-    e.preventDefault(); // предотвращаем перезагрузку страницы
+    e.preventDefault(); // блокируем перезагрузку страницы
     formMessage.textContent = '';
     formMessage.className = 'message';
 
