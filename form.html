@@ -101,6 +101,10 @@
     <label>Телефон
       <input type="tel" name="phone" required placeholder="Введите ваш номер">
     </label>
+
+    <!-- Скрытое поле для chat_id -->
+    <input type="hidden" name="chat_id" id="chat_id">
+
     <button type="submit">Отправить</button>
     <div id="formMessage" class="message"></div>
   </form>
@@ -113,11 +117,10 @@ const chatIdField = document.getElementById('chat_id');
 
 // Берём chat_id из URL
 const urlParams = new URLSearchParams(window.location.search);
-const chat_id = urlParams.get('chat_id') || '';
-chatIdField.value = chat_id;
-  
+chatIdField.value = urlParams.get('chat_id') || '';
+
 form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // предотвращаем перезагрузку страницы
     formMessage.textContent = '';
     formMessage.className = 'message';
 
@@ -135,7 +138,6 @@ form.addEventListener('submit', async (e) => {
     }
 
     try {
-        // Реальный вебхук Make
         const webhookUrl = 'https://hook.eu2.make.com/pritqa4uffcrtbj36f0vz91vtnxegld5';
 
         const response = await fetch(webhookUrl, {
