@@ -115,6 +115,7 @@ form.addEventListener('submit', (e) => {
     formMessage.textContent = '';
     formMessage.className = 'message';
 
+    // Проверка всех полей
     const data = {
         fullName: form.fullName.value.trim(),
         email: form.email.value.trim(),
@@ -127,21 +128,22 @@ form.addEventListener('submit', (e) => {
         return;
     }
 
-    try {
-        // Отправляем данные боту через Telegram Web App
-        if (window.Telegram.WebApp) {
+    // Проверка открытия в Telegram Web App
+    if (window.Telegram && Telegram.WebApp) {
+        try {
+            console.log("Отправляем данные:", data);
             Telegram.WebApp.sendData(JSON.stringify(data));
             formMessage.textContent = 'Данные отправлены! ✅';
             formMessage.classList.add('success');
             form.reset();
-        } else {
-            formMessage.textContent = 'Ошибка: форма должна открываться внутри Telegram.';
+        } catch (err) {
+            console.error(err);
+            formMessage.textContent = 'Ошибка при отправке данных.';
             formMessage.classList.add('error');
         }
-    } catch (err) {
-        formMessage.textContent = 'Ошибка при отправке данных.';
+    } else {
+        formMessage.textContent = 'Ошибка: форма должна открываться внутри Telegram.';
         formMessage.classList.add('error');
-        console.error(err);
     }
 });
 </script>
