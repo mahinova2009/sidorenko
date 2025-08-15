@@ -1,1 +1,157 @@
-<!DOCTYPE html> <html lang="ru"> <head> <meta charset="UTF-8"> <title>Форма регистрации</title> <style> body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #E5E5E5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; } .form-container { background-color: #FFFFFF; border-radius: 12px; padding: 30px 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 400px; } h3 { text-align: center; color: #0088CC; margin-bottom: 25px; } label { display: block; margin-bottom: 15px; font-weight: 500; color: #333333; } input[type="text"], input[type="email"], input[type="tel"] { width: 100%; padding: 10px 12px; border: 1px solid #CCCCCC; border-radius: 8px; font-size: 15px; transition: border-color 0.2s; } input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus { outline: none; border-color: #0088CC; box-shadow: 0 0 4px rgba(0,136,204,0.3); } button { width: 100%; padding: 12px 0; background-color: #0088CC; color: #FFFFFF; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; transition: background-color 0.2s; font-weight: bold; } button:hover { background-color: #006699; } .message { text-align: center; margin-top: 15px; font-weight: bold; } .message.success { color: #008800; } .message.error { color: #CC0000; } </style> </head> <body> <div class="form-container"> <h3>Регистрация</h3> <form id="registrationForm"> <label>ФИО <input type="text" name="fullName" required placeholder="Введите ваше ФИО"> </label> <label>Email <input type="email" name="email" required placeholder="Введите ваш Email"> </label> <label>Телефон <input type="tel" name="phone" required placeholder="Введите ваш номер"> </label> <button type="submit">Отправить</button> <div id="formMessage" class="message"></div> </form> </div> <script> const form = document.getElementById('registrationForm'); const formMessage = document.getElementById('formMessage'); form.addEventListener('submit', async (e) => { e.preventDefault(); formMessage.textContent = ''; formMessage.className = 'message'; const data = { fullName: form.fullName.value.trim(), email: form.email.value.trim(), phone: form.phone.value.trim() }; if (!data.fullName || !data.email || !data.phone) { formMessage.textContent = 'Пожалуйста, заполните все поля.'; formMessage.classList.add('error'); return; } try { // Реальный вебхук Make const webhookUrl = 'https://hook.eu2.make.com/tr25m2e0qijnnkn8d58m0sbmur391uxp'; const response = await fetch(webhookUrl, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) }); if (response.ok) { formMessage.textContent = 'Данные успешно отправлены! ✅'; formMessage.classList.add('success'); form.reset(); } else { const resultText = await response.text(); formMessage.textContent = Ошибка при отправке: ${response.status}. ${resultText}; formMessage.classList.add('error'); } } catch (err) { formMessage.textContent = 'Ошибка сети. Проверьте подключение.'; formMessage.classList.add('error'); } }); </script> </body> </html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Форма регистрации</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #E5E5E5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  .form-container {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    padding: 30px 40px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+  }
+
+  h3 {
+    text-align: center;
+    color: #0088CC;
+    margin-bottom: 25px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 15px;
+    font-weight: 500;
+    color: #333333;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #CCCCCC;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: border-color 0.2s;
+  }
+
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="tel"]:focus {
+    outline: none;
+    border-color: #0088CC;
+    box-shadow: 0 0 4px rgba(0,136,204,0.3);
+  }
+
+  button {
+    width: 100%;
+    padding: 12px 0;
+    background-color: #0088CC;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-weight: bold;
+  }
+
+  button:hover {
+    background-color: #006699;
+  }
+
+  .message {
+    text-align: center;
+    margin-top: 15px;
+    font-weight: bold;
+  }
+
+  .message.success {
+    color: #008800;
+  }
+
+  .message.error {
+    color: #CC0000;
+  }
+</style>
+</head>
+<body>
+
+<div class="form-container">
+  <h3>Регистрация</h3>
+  <form id="registrationForm">
+    <label>ФИО
+      <input type="text" name="fullName" required placeholder="Введите ваше ФИО">
+    </label>
+    <label>Email
+      <input type="email" name="email" required placeholder="Введите ваш Email">
+    </label>
+    <label>Телефон
+      <input type="tel" name="phone" required placeholder="Введите ваш номер">
+    </label>
+    <button type="submit">Отправить</button>
+    <div id="formMessage" class="message"></div>
+  </form>
+</div>
+
+<script>
+const form = document.getElementById('registrationForm');
+const formMessage = document.getElementById('formMessage');
+
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    formMessage.textContent = '';
+    formMessage.className = 'message';
+
+    const data = {
+        fullName: form.fullName.value.trim(),
+        email: form.email.value.trim(),
+        phone: form.phone.value.trim()
+    };
+
+    if (!data.fullName || !data.email || !data.phone) {
+        formMessage.textContent = 'Пожалуйста, заполните все поля.';
+        formMessage.classList.add('error');
+        return;
+    }
+
+    try {
+        // Реальный вебхук Make
+        const webhookUrl = 'https://hook.eu2.make.com/tr25m2e0qijnnkn8d58m0sbmur391uxp';
+
+        const response = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            formMessage.textContent = 'Данные успешно отправлены! ✅';
+            formMessage.classList.add('success');
+            form.reset();
+        } else {
+            const resultText = await response.text();
+            formMessage.textContent = `Ошибка при отправке: ${response.status}. ${resultText}`;
+            formMessage.classList.add('error');
+        }
+    } catch (err) {
+        formMessage.textContent = 'Ошибка сети. Проверьте подключение.';
+        formMessage.classList.add('error');
+    }
+});
+</script>
+
+</body>
+</html>
