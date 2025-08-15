@@ -2,99 +2,157 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Форма регистрации</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f6f9;
-    color: #333;
-    margin: 0;
-    padding: 20px;
-    text-align: center;
-  }
-  h3 {
-    color: #229ED9;
-  }
-  form {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    display: inline-block;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  }
-  label {
-    display: block;
-    margin: 10px 0;
-    text-align: left;
-  }
-  input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    margin-top: 4px;
-  }
-  button {
-    background-color: #229ED9;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 10px;
-  }
-  button:hover {
-    background-color: #1a7eb6;
-  }
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #74ABE2, #5563DE);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    .container {
+        background: #fff;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        width: 100%;
+        max-width: 400px;
+    }
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+    }
+    label {
+        display: block;
+        margin: 10px 0 5px;
+        font-weight: bold;
+        color: #444;
+    }
+    input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-sizing: border-box;
+        font-size: 14px;
+    }
+    button {
+        margin-top: 15px;
+        width: 100%;
+        padding: 12px;
+        border: none;
+        background: #5563DE;
+        color: #fff;
+        font-size: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+    button:hover {
+        background: #4050c2;
+    }
+    .message {
+        margin-top: 15px;
+        padding: 10px;
+        text-align: center;
+        border-radius: 8px;
+        font-size: 14px;
+        display: none;
+    }
+    .message.success {
+        background: #d4edda;
+        color: #155724;
+    }
+    .message.error {
+        background: #f8d7da;
+        color: #721c24;
+    }
 </style>
 </head>
 <body>
 
-<h3>Регистрация</h3>
-<form id="registrationForm">
-  <label>ФИО: <input type="text" name="fullName" required></label>
-  <label>Email: <input type="email" name="email" required></label>
-  <label>Телефон: <input type="tel" name="phone" required></label>
-  <input type="hidden" name="chat_id" id="chat_id">
-  <button type="submit">Отправить</button>
-</form>
+<div class="container">
+    <h2>Регистрация</h2>
+    <form id="registrationForm">
+        <label>Имя:</label>
+        <input type="text" name="fullName" required>
+
+        <label>Email:</label>
+        <input type="email" name="email" required>
+
+        <label>Телефон:</label>
+        <input type="tel" name="phone" required>
+
+        <!-- Скрытое поле для chat_id -->
+        <input type="hidden" name="chat_id" id="chat_id">
+
+        <button type="submit">Отправить</button>
+    </form>
+    <div id="formMessage" class="message"></div>
+</div>
 
 <script>
 const form = document.getElementById('registrationForm');
+const formMessage = document.getElementById('formMessage');
+const chatIdField = document.getElementById('chat_id');
 
-// Получаем chat_id из параметров URL (?chat_id=123456)
+// Берём chat_id из URL
 const urlParams = new URLSearchParams(window.location.search);
-const chatIdFromUrl = urlParams.get('chat_id');
-if (chatIdFromUrl) {
-    document.getElementById('chat_id').value = chatIdFromUrl;
-}
+const chat_id = urlParams.get('chat_id') || '';
+chatIdField.value = chat_id;
 
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    formMessage.style.display = 'none';
+    formMessage.textContent = '';
+
     const data = {
-        fullName: form.fullName.value,
-        email: form.email.value,
-        phone: form.phone.value,
-        chat_id: form.chat_id.value
+        fullName: form.fullName.value.trim(),
+        email: form.email.value.trim(),
+        phone: form.phone.value.trim(),
+        chat_id: chatIdField.value
     };
+
+    if (!data.fullName || !data.email || !data.phone) {
+        formMessage.textContent = 'Пожалуйста, заполните все поля.';
+        formMessage.className = 'message error';
+        formMessage.style.display = 'block';
+        return;
+    }
 
     try {
         const webhookUrl = 'https://hook.eu2.make.com/tr25m2e0qijnnkn8d58m0sbmur391uxp';
+
         const response = await fetch(webhookUrl, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(data)
         });
 
-        if (!response.ok) {
-            throw new Error(`Ошибка: ${response.status}`);
+        if (response.ok) {
+            formMessage.textContent = 'Данные успешно отправлены! ✅';
+            formMessage.className = 'message success';
+            formMessage.style.display = 'block';
+            form.reset();
+            chatIdField.value = chat_id;
+        } else {
+            const resultText = await response.text();
+            formMessage.textContent = `Ошибка при отправке: ${response.status}. ${resultText}`;
+            formMessage.className = 'message error';
+            formMessage.style.display = 'block';
         }
-
-        alert('✅ Данные отправлены!');
-    } catch (error) {
-        alert('❌ Ошибка при отправке данных. Подробности: ' + error.message);
+    } catch (err) {
+        formMessage.textContent = 'Ошибка сети. Проверьте подключение.';
+        formMessage.className = 'message error';
+        formMessage.style.display = 'block';
     }
 });
 </script>
+
 </body>
 </html>
