@@ -148,7 +148,6 @@ form.addEventListener('submit', async (e) => {
             formMessage.textContent = 'Данные успешно отправлены! ✅';
             formMessage.classList.add('success');
             form.reset();
-            chatIdField.value = chat_id;
         } else {
             const resultText = await response.text();
             formMessage.textContent = `Ошибка при отправке: ${response.status}. ${resultText}`;
