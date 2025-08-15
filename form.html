@@ -3,18 +3,107 @@
 <head>
 <meta charset="UTF-8">
 <title>Форма регистрации</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #E5E5E5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  .form-container {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    padding: 30px 40px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+  }
+
+  h3 {
+    text-align: center;
+    color: #0088CC; /* Telegram blue */
+    margin-bottom: 25px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 15px;
+    font-weight: 500;
+    color: #333333;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #CCCCCC;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: border-color 0.2s;
+  }
+
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="tel"]:focus {
+    outline: none;
+    border-color: #0088CC;
+    box-shadow: 0 0 4px rgba(0,136,204,0.3);
+  }
+
+  button {
+    width: 100%;
+    padding: 12px 0;
+    background-color: #0088CC;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-weight: bold;
+  }
+
+  button:hover {
+    background-color: #006699;
+  }
+
+  .success-message {
+    text-align: center;
+    color: #008800;
+    margin-top: 15px;
+    font-weight: bold;
+  }
+</style>
 </head>
 <body>
-<h3>Регистрация</h3>
-<form id="registrationForm">
-  <label>ФИО: <input type="text" name="fullName" required></label><br><br>
-  <label>Email: <input type="email" name="email" required></label><br><br>
-  <label>Телефон: <input type="tel" name="phone" required></label><br><br>
-  <button type="submit">Отправить</button>
-</form>
+
+<div class="form-container">
+  <h3>Регистрация</h3>
+  <form id="registrationForm">
+    <label>ФИО
+      <input type="text" name="fullName" required placeholder="Введите ваше ФИО">
+    </label>
+    <label>Email
+      <input type="email" name="email" required placeholder="Введите ваш Email">
+    </label>
+    <label>Телефон
+      <input type="tel" name="phone" required placeholder="Введите ваш номер">
+    </label>
+    <button type="submit">Отправить</button>
+    <div class="success-message" id="successMessage" style="display:none;">
+      Данные успешно отправлены! ✅
+    </div>
+  </form>
+</div>
 
 <script>
 const form = document.getElementById('registrationForm');
+const successMessage = document.getElementById('successMessage');
 
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -24,16 +113,25 @@ form.addEventListener('submit', async (e) => {
         phone: form.phone.value
     };
 
-    // Отправляем данные на webhook Make
-    const webhookUrl = 'ВАШ_WEBHOOK_URL_MAKE';
-    await fetch(webhookUrl, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    });
+    try {
+        const webhookUrl = 'ВАШ_WEBHOOK_URL_MAKE';
+        const response = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
 
-    alert('Данные отправлены!');
+        if (response.ok) {
+            successMessage.style.display = 'block';
+            form.reset();
+        } else {
+            alert('Ошибка при отправке данных. Попробуйте ещё раз.');
+        }
+    } catch (err) {
+        alert('Ошибка сети. Проверьте подключение.');
+    }
 });
 </script>
+
 </body>
 </html>
