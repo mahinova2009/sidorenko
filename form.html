@@ -110,7 +110,7 @@
 const form = document.getElementById('registrationForm');
 const formMessage = document.getElementById('formMessage');
 
-form.addEventListener('submit', async (e) => {
+form.addEventListener('submit', (e) => {
     e.preventDefault();
     formMessage.textContent = '';
     formMessage.className = 'message';
@@ -128,27 +128,20 @@ form.addEventListener('submit', async (e) => {
     }
 
     try {
-        // Реальный вебхук Make
-        const webhookUrl = 'https://hook.eu2.make.com/tr25m2e0qijnnkn8d58m0sbmur391uxp';
-
-        const response = await fetch(webhookUrl, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(data)
-        });
-
-        if (response.ok) {
-            formMessage.textContent = 'Данные успешно отправлены! ✅';
+        // Отправляем данные боту через Telegram Web App
+        if (window.Telegram.WebApp) {
+            Telegram.WebApp.sendData(JSON.stringify(data));
+            formMessage.textContent = 'Данные отправлены! ✅';
             formMessage.classList.add('success');
             form.reset();
         } else {
-            const resultText = await response.text();
-            formMessage.textContent = `Ошибка при отправке: ${response.status}. ${resultText}`;
+            formMessage.textContent = 'Ошибка: форма должна открываться внутри Telegram.';
             formMessage.classList.add('error');
         }
     } catch (err) {
-        formMessage.textContent = 'Ошибка сети. Проверьте подключение.';
+        formMessage.textContent = 'Ошибка при отправке данных.';
         formMessage.classList.add('error');
+        console.error(err);
     }
 });
 </script>
