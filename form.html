@@ -7,75 +7,94 @@
   body {
     font-family: Arial, sans-serif;
     background-color: #f4f6f9;
-    color: #333;
     margin: 0;
-    padding: 20px;
-    text-align: center;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  .form-container {
+    background: white;
+    padding: 20px 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 350px;
   }
   h3 {
-    color: #229ED9;
-  }
-  form {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    display: inline-block;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    text-align: center;
+    color: #0088cc;
   }
   label {
     display: block;
-    margin: 10px 0;
-    text-align: left;
+    margin-top: 15px;
+    font-weight: bold;
   }
   input {
     width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 5px;
     border-radius: 6px;
-    margin-top: 4px;
+    border: 1px solid #ccc;
+    font-size: 14px;
   }
   button {
-    background-color: #229ED9;
+    margin-top: 20px;
+    width: 100%;
+    padding: 10px;
+    background-color: #0088cc;
     color: white;
     border: none;
-    padding: 10px 16px;
     border-radius: 6px;
+    font-size: 16px;
     cursor: pointer;
-    margin-top: 10px;
   }
   button:hover {
-    background-color: #1a7eb6;
+    background-color: #006fa1;
   }
 </style>
 </head>
 <body>
 
-<h3>Регистрация</h3>
-<form id="registrationForm">
-  <label>ФИО: <input type="text" name="fullName" required></label>
-  <label>Email: <input type="email" name="email" required></label>
-  <label>Телефон: <input type="tel" name="phone" required></label>
-  <input type="hidden" name="chat_id" id="chat_id">
-  <button type="submit">Отправить</button>
-</form>
+<div class="form-container">
+  <h3>Регистрация</h3>
+  <form id="registrationForm">
+    <input type="hidden" name="chat_id" id="chat_id">
+
+    <label>ФИО:</label>
+    <input type="text" name="fullName" required>
+
+    <label>Email:</label>
+    <input type="email" name="email" required>
+
+    <label>Телефон:</label>
+    <input type="tel" name="phone" required>
+
+    <button type="submit">Отправить</button>
+  </form>
+</div>
 
 <script>
 const form = document.getElementById('registrationForm');
 
-// Получаем chat_id из параметров URL (?chat_id=123456)
-const urlParams = new URLSearchParams(window.location.search);
-const chatIdFromUrl = urlParams.get('chat_id');
-if (chatIdFromUrl) {
-    document.getElementById('chat_id').value = chatIdFromUrl;
+// Telegram WebApp API
+if (window.Telegram && Telegram.WebApp) {
+    Telegram.WebApp.ready();
+    const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
+    if (initDataUnsafe && initDataUnsafe.user) {
+        document.getElementById('chat_id').value = initDataUnsafe.user.id;
+    }
 }
 
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
+
     const data = {
+        chat_id: form.chat_id.value,
         fullName: form.fullName.value,
         email: form.email.value,
-        phone: form.phone.value,
-        chat_id: form.chat_id.value
+        phone: form.phone.value
     };
 
     try {
@@ -86,15 +105,14 @@ form.addEventListener('submit', async (e) => {
             body: JSON.stringify(data)
         });
 
-        if (!response.ok) {
-            throw new Error(`Ошибка: ${response.status}`);
-        }
+        if (!response.ok) throw new Error('Ошибка при отправке');
 
-        alert('✅ Данные отправлены!');
+        alert('✅ Данные успешно отправлены!');
     } catch (error) {
-        alert('❌ Ошибка при отправке данных. Подробности: ' + error.message);
+        alert('❌ Ошибка при отправке данных: ' + error.message);
     }
 });
 </script>
+
 </body>
 </html>
