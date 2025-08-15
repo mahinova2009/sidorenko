@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Форма регистрации</title>
+</head>
+<body>
+<h3>Регистрация</h3>
+<form id="registrationForm">
+  <label>ФИО: <input type="text" name="fullName" required></label><br><br>
+  <label>Email: <input type="email" name="email" required></label><br><br>
+  <label>Телефон: <input type="tel" name="phone" required></label><br><br>
+  <button type="submit">Отправить</button>
+</form>
+
+<script>
+const form = document.getElementById('registrationForm');
+
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = {
+        fullName: form.fullName.value,
+        email: form.email.value,
+        phone: form.phone.value
+    };
+
+    // Отправляем данные на webhook Make
+    const webhookUrl = 'ВАШ_WEBHOOK_URL_MAKE';
+    await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
+
+    alert('Данные отправлены!');
+});
+</script>
+</body>
+</html>
