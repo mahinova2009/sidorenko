@@ -38,7 +38,10 @@
 
   input[type="text"],
   input[type="email"],
-  input[type="tel"] {
+  input[type="tel"],
+  input[type="date"],
+  input[type="search"],
+  select {
     width: 100%;
     padding: 10px 12px;
     border: 1px solid #CCCCCC;
@@ -47,9 +50,7 @@
     transition: border-color 0.2s;
   }
 
-  input[type="text"]:focus,
-  input[type="email"]:focus,
-  input[type="tel"]:focus {
+  input:focus, select:focus {
     outline: none;
     border-color: #0088CC;
     box-shadow: 0 0 4px rgba(0,136,204,0.3);
@@ -85,6 +86,31 @@
   .message.error {
     color: #CC0000;
   }
+
+  .country-dropdown {
+    position: relative;
+  }
+
+  .country-list {
+    position: absolute;
+    width: 100%;
+    background: white;
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+    border-radius: 6px;
+    z-index: 10;
+    display: none;
+  }
+
+  .country-list div {
+    padding: 8px;
+    cursor: pointer;
+  }
+
+  .country-list div:hover {
+    background: #f0f0f0;
+  }
 </style>
 </head>
 <body>
@@ -101,8 +127,19 @@
     <label>Телефон
       <input type="tel" name="phone" required placeholder="Введите ваш номер">
     </label>
+    <label>Дата рождения
+      <input type="date" name="birthDate" required>
+    </label>
 
-    <!-- Скрытое поле для chat_id -->
+    <label>Страна</label>
+    <div class="country-dropdown">
+      <input type="search" id="countrySearch" placeholder="Поиск страны..." autocomplete="off">
+      <div id="countryList" class="country-list"></div>
+    </div>
+
+    <input type="hidden" name="country" id="countryHidden">
+    <input type="hidden" name="timezone" id="timezoneHidden">
+
     <input type="hidden" name="chat_id" id="chat_id">
 
     <button type="submit">Отправить</button>
@@ -111,17 +148,70 @@
 </div>
 
 <script>
+const countries = [
+  { name: "Молдова", offset: "0" },
+  { name: "Россия (Москва)", offset: "+1" },
+  { name: "Россия (Новосибирск)", offset: "+5" },
+  { name: "Украина (Киев)", offset: "0" },
+  { name: "Беларусь (Минск)", offset: "+1" },
+  { name: "Казахстан (Алматы)", offset: "+4" },
+  { name: "Грузия (Тбилиси)", offset: "+2" },
+  { name: "Армения (Ереван)", offset: "+2" },
+  { name: "Германия (Берлин)", offset: "-1" },
+  { name: "Франция (Париж)", offset: "-1" },
+  { name: "Италия (Рим)", offset: "-1" },
+  { name: "Испания (Мадрид)", offset: "-1" },
+  { name: "Польша (Варшава)", offset: "-1" },
+  { name: "Чехия (Прага)", offset: "-1" },
+  { name: "Турция (Стамбул)", offset: "+1" },
+  { name: "Греция (Афины)", offset: "0" },
+  { name: "США (Нью-Йорк)", offset: "-7" },
+  { name: "США (Лос-Анджелес)", offset: "-10" },
+  { name: "США (Чикаго)", offset: "-8" },
+  { name: "США (Майами)", offset: "-7" },
+  { name: "Канада (Торонто)", offset: "-7" },
+  { name: "Канада (Ванкувер)", offset: "-10" },
+  { name: "ОАЭ (Дубай)", offset: "+2" }
+];
+
+
+const searchInput = document.getElementById('countrySearch');
+const listDiv = document.getElementById('countryList');
+const countryHidden = document.getElementById('countryHidden');
+const timezoneHidden = document.getElementById('timezoneHidden');
+
+searchInput.addEventListener('input', () => {
+  const query = searchInput.value.toLowerCase();
+  listDiv.innerHTML = '';
+  if (query.length > 0) {
+    const filtered = countries.filter(c => c.name.toLowerCase().includes(query));
+    filtered.forEach(c => {
+      const div = document.createElement('div');
+      div.textContent = `${c.name} (UTC${c.offset})`;
+      div.addEventListener('click', () => {
+        searchInput.value = c.name;
+        countryHidden.value = c.name;
+        timezoneHidden.value = c.offset;
+        listDiv.style.display = 'none';
+      });
+      listDiv.appendChild(div);
+    });
+    listDiv.style.display = filtered.length ? 'block' : 'none';
+  } else {
+    listDiv.style.display = 'none';
+  }
+});
+
+// chat_id из URL
+const chatIdField = document.getElementById('chat_id');
+const urlParams = new URLSearchParams(window.location.search);
+chatIdField.value = urlParams.get('chat_id') || '';
+
 const form = document.getElementById('registrationForm');
 const formMessage = document.getElementById('formMessage');
-const chatIdField = document.getElementById('chat_id');
-
-// Берём chat_id из URL
-const urlParams = new URLSearchParams(window.location.search);
-const chat_id = urlParams.get('chat_id') || '';
-chatIdField.value = chat_id;
 
 form.addEventListener('submit', async (e) => {
-    e.preventDefault(); // блокируем перезагрузку страницы
+    e.preventDefault();
     formMessage.textContent = '';
     formMessage.className = 'message';
 
@@ -129,10 +219,13 @@ form.addEventListener('submit', async (e) => {
         fullName: form.fullName.value.trim(),
         email: form.email.value.trim(),
         phone: form.phone.value.trim(),
+        birthDate: form.birthDate.value,
+        country: countryHidden.value,
+        timezone: timezoneHidden.value,
         chat_id: chatIdField.value
     };
 
-    if (!data.fullName || !data.email || !data.phone) {
+    if (!data.fullName || !data.email || !data.phone || !data.birthDate || !data.country) {
         formMessage.textContent = 'Пожалуйста, заполните все поля.';
         formMessage.classList.add('error');
         return;
