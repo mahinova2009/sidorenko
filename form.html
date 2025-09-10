@@ -113,27 +113,36 @@
   .country-list div:hover {
     background: #f0f0f0;
   }
+
+  .lang-switch {
+    text-align: center;
+    margin-bottom: 15px;
+  }
+  .lang-switch button {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    background: #f8f8f8;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .lang-switch button.active {
+    background: #0088CC;
+    color: #fff;
+  }
 </style>
 </head>
 <body>
 
 <div class="form-container">
-  <h3>Регистрация</h3>
+  <h3 id="formTitle">Регистрация</h3>
+  <div class="lang-switch">
+    <button data-lang="ru" class="active">RU</button>
+    <button data-lang="ro">RO</button>
+    <button data-lang="en">EN</button>
+  </div>
   <form id="registrationForm">
-    <label>ФИО
-      <input type="text" name="fullName" required placeholder="Введите ваше ФИО">
-    </label>
-    <label>Email
-      <input type="email" name="email" required placeholder="Введите ваш Email">
-    </label>
-    <label>Телефон
-      <input type="tel" name="phone" required placeholder="Введите ваш номер">
-    </label>
-    <label>Дата рождения
-      <input type="date" name="birthDate" required>
-    </label>
-
-    <label>Страна</label>
+    <label id="labelCountry">Страна</label>
     <div class="country-dropdown">
       <input type="search" id="countrySearch" placeholder="Поиск страны..." autocomplete="off">
       <div id="countryList" class="country-list"></div>
@@ -142,58 +151,87 @@
     <input type="hidden" name="country" id="countryHidden">
     <input type="hidden" name="timezone" id="timezoneHidden">
 
+    <label id="labelPhone">Телефон
+      <input type="tel" name="phone" id="phoneInput" required placeholder="Введите номер телефона">
+    </label>
+    <label id="labelFullName">ФИО
+      <input type="text" name="fullName" required placeholder="Введите ваше ФИО">
+    </label>
+    <label id="labelEmail">Email
+      <input type="email" name="email" required placeholder="Введите ваш Email">
+    </label>
+    <label id="labelBirthDate">Дата рождения
+      <input type="date" name="birthDate" required>
+    </label>
+
     <input type="hidden" name="chat_id" id="chat_id">
 
-    <button type="submit">Отправить</button>
+    <button type="submit" id="submitBtn">Отправить</button>
     <div id="formMessage" class="message"></div>
   </form>
 </div>
 
 <script>
 const countries = [
-  { name: "Молдова", offset: "0" },
-  { name: "Россия (Москва)", offset: "+1" },
-  { name: "Россия (Новосибирск)", offset: "+5" },
-  { name: "Украина (Киев)", offset: "0" },
-  { name: "Беларусь (Минск)", offset: "+1" },
-  { name: "Казахстан (Алматы)", offset: "+4" },
-  { name: "Грузия (Тбилиси)", offset: "+2" },
-  { name: "Армения (Ереван)", offset: "+2" },
-  { name: "Германия (Берлин)", offset: "-1" },
-  { name: "Франция (Париж)", offset: "-1" },
-  { name: "Италия (Рим)", offset: "-1" },
-  { name: "Испания (Мадрид)", offset: "-1" },
-  { name: "Польша (Варшава)", offset: "-1" },
-  { name: "Чехия (Прага)", offset: "-1" },
-  { name: "Турция (Стамбул)", offset: "+1" },
-  { name: "Греция (Афины)", offset: "0" },
-  { name: "США (Нью-Йорк)", offset: "-7" },
-  { name: "США (Лос-Анджелес)", offset: "-10" },
-  { name: "США (Чикаго)", offset: "-8" },
-  { name: "США (Майами)", offset: "-7" },
-  { name: "Канада (Торонто)", offset: "-7" },
-  { name: "Канада (Ванкувер)", offset: "-10" },
-  { name: "ОАЭ (Дубай)", offset: "+2" }
+  { names: ["Молдова","Moldova"], offset: "0", code: "+373" },
+  { names: ["Россия","Russia (Moscow)"], offset: "+1", code: "+7" },
+  { names: ["Украина","Ukraine (Kyiv)"], offset: "0", code: "+380" },
+  { names: ["Румыния","Romania"], offset: "0", code: "+40" },
+  { names: ["Греция","Greece"], offset: "0", code: "+30" },
+  { names: ["Турция","Turkey"], offset: "+1", code: "+90" },
+  { names: ["США","USA","United States"], offset: "-7", code: "+1" }
 ];
 
+const translations = {
+  ru: {
+    title: "Регистрация",
+    country: "Страна",
+    phone: "Телефон",
+    fullName: "ФИО",
+    email: "Email",
+    birthDate: "Дата рождения",
+    submit: "Отправить"
+  },
+  ro: {
+    title: "Înregistrare",
+    country: "Țara",
+    phone: "Telefon",
+    fullName: "Nume complet",
+    email: "Email",
+    birthDate: "Data nașterii",
+    submit: "Trimite"
+  },
+  en: {
+    title: "Registration",
+    country: "Country",
+    phone: "Phone",
+    fullName: "Full Name",
+    email: "Email",
+    birthDate: "Date of Birth",
+    submit: "Submit"
+  }
+};
 
 const searchInput = document.getElementById('countrySearch');
 const listDiv = document.getElementById('countryList');
 const countryHidden = document.getElementById('countryHidden');
 const timezoneHidden = document.getElementById('timezoneHidden');
+const phoneInput = document.getElementById('phoneInput');
 
+// вывод списка стран
 searchInput.addEventListener('input', () => {
   const query = searchInput.value.toLowerCase();
   listDiv.innerHTML = '';
   if (query.length > 0) {
-    const filtered = countries.filter(c => c.name.toLowerCase().includes(query));
+    const filtered = countries.filter(c => c.names.some(n => n.toLowerCase().includes(query)));
     filtered.forEach(c => {
       const div = document.createElement('div');
-      div.textContent = `${c.name} (UTC${c.offset})`;
+      div.textContent = `${c.names[0]} (UTC${c.offset})`;
       div.addEventListener('click', () => {
-        searchInput.value = c.name;
-        countryHidden.value = c.name;
+        searchInput.value = c.names[0];
+        countryHidden.value = c.names[0];
         timezoneHidden.value = c.offset;
+        phoneInput.value = c.code + " ";
         listDiv.style.display = 'none';
       });
       listDiv.appendChild(div);
@@ -204,58 +242,26 @@ searchInput.addEventListener('input', () => {
   }
 });
 
+// переключение языков
+document.querySelectorAll('.lang-switch button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.lang-switch button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const lang = btn.dataset.lang;
+    document.getElementById('formTitle').textContent = translations[lang].title;
+    document.getElementById('labelCountry').textContent = translations[lang].country;
+    document.getElementById('labelPhone').childNodes[0].textContent = translations[lang].phone;
+    document.getElementById('labelFullName').childNodes[0].textContent = translations[lang].fullName;
+    document.getElementById('labelEmail').childNodes[0].textContent = translations[lang].email;
+    document.getElementById('labelBirthDate').childNodes[0].textContent = translations[lang].birthDate;
+    document.getElementById('submitBtn').textContent = translations[lang].submit;
+  });
+});
+
 // chat_id из URL
 const chatIdField = document.getElementById('chat_id');
 const urlParams = new URLSearchParams(window.location.search);
 chatIdField.value = urlParams.get('chat_id') || '';
-
-const form = document.getElementById('registrationForm');
-const formMessage = document.getElementById('formMessage');
-
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    formMessage.textContent = '';
-    formMessage.className = 'message';
-
-    const data = {
-        fullName: form.fullName.value.trim(),
-        email: form.email.value.trim(),
-        phone: form.phone.value.trim(),
-        birthDate: form.birthDate.value,
-        country: countryHidden.value,
-        timezone: timezoneHidden.value,
-        chat_id: chatIdField.value
-    };
-
-    if (!data.fullName || !data.email || !data.phone || !data.birthDate || !data.country) {
-        formMessage.textContent = 'Пожалуйста, заполните все поля.';
-        formMessage.classList.add('error');
-        return;
-    }
-
-    try {
-        const webhookUrl = 'https://hook.eu2.make.com/1unspxkdfik4bgnhsvpra9m71urdffcj';
-
-        const response = await fetch(webhookUrl, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(data)
-        });
-
-        if (response.ok) {
-            formMessage.textContent = 'Данные успешно отправлены! ✅ Можете закрыть форму.';
-            formMessage.classList.add('success');
-            form.reset();
-        } else {
-            const resultText = await response.text();
-            formMessage.textContent = `Ошибка при отправке: ${response.status}. ${resultText}`;
-            formMessage.classList.add('error');
-        }
-    } catch (err) {
-        formMessage.textContent = 'Ошибка сети. Проверьте подключение.';
-        formMessage.classList.add('error');
-    }
-});
 </script>
 
 </body>
