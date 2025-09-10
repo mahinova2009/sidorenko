@@ -1,451 +1,362 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8">
 <title>Форма регистрации</title>
 <style>
-  :root{
-    --blue:#0088CC;
-    --blue-dark:#006699;
-    --muted:#f2f6f8;
-    --gap:14px;
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #E5E5E5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
   }
 
-  *{box-sizing:border-box;font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;}
-
-  body{
-    margin:0;
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:#E5E5E5;
-    padding:20px;
+  .form-container {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    padding: 30px 40px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
   }
 
-  .form-container{
-    width:100%;
-    max-width:420px;
-    background:#fff;
-    border-radius:12px;
-    padding:26px;
-    box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  h3 {
+    text-align: center;
+    color: #0088CC;
+    margin-bottom: 15px;
   }
 
-  h3{
-    text-align:center;
-    color:var(--blue);
-    margin:0 0 12px;
-    font-size:20px;
+  .lang-switcher {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
   }
 
-  .lang-switch{
-    display:flex;
-    gap:8px;
-    justify-content:center;
-    margin-bottom: var(--gap);
+  .lang-switcher button {
+    flex: 1;
+    margin: 0 3px;
+    padding: 8px 0;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    color: #333;
+    transition: background-color 0.2s;
   }
 
-  .lang-switch button{
-    width:46px;height:36px;border-radius:6px;border:1px solid #d0d7db;
-    background:#fff; color:var(--blue); cursor:pointer;
-    font-weight:700;
-  }
-  .lang-switch button.active{
-    background:var(--blue); color:#fff; border-color:var(--blue);
+  .lang-switcher button.active {
+    background-color: #0088CC;
+    color: #fff;
   }
 
-  form{
-    display:flex;
-    flex-direction:column;
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #333333;
   }
-
-  .field{
-    margin-bottom:var(--gap);
-    position:relative;
-  }
-
-  label.visually-hidden{ position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden; }
 
   input[type="text"],
   input[type="email"],
   input[type="tel"],
   input[type="date"],
-  input[type="search"]{
-    width:100%;
-    padding:11px 12px;
-    border-radius:8px;
-    border:1px solid #d8dbe0;
-    font-size:15px;
-    background:#fff;
-    transition:box-shadow .12s, border-color .12s;
-  }
-  input:focus{ outline:none; border-color:var(--blue); box-shadow:0 0 6px rgba(0,136,204,0.12); }
-
-  /* Country dropdown */
-  .country-dropdown { position:relative; }
-  #countrySearch{ cursor:text; }
-  .country-list{
-    position:absolute;
-    left:0; right:0;
-    top:calc(100% + 6px);
-    background:#fff;
-    border:1px solid #e0e3e6;
-    border-radius:8px;
-    max-height:220px;
-    overflow:auto;
-    z-index:30;
-    box-shadow:0 10px 24px rgba(0,0,0,0.06);
-    display:none;
-  }
-  .country-item{
-    padding:10px 12px;
-    cursor:pointer;
-    font-size:14px;
-    color:#222;
-  }
-  .country-item:hover, .country-item.active{
-    background:#f5fbff;
+  input[type="search"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #CCCCCC;
+    border-radius: 8px;
+    font-size: 15px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
   }
 
-  .consent{
-    display:flex;
-    gap:10px;
-    align-items:flex-start;
-    margin-bottom:12px;
+  input:focus {
+    outline: none;
+    border-color: #0088CC;
+    box-shadow: 0 0 4px rgba(0,136,204,0.3);
   }
-  .consent label{ font-size:14px; color:#333; margin:0; }
 
-  button[type="submit"]{
-    border:0;
-    background:var(--blue);
-    color:#fff;
-    padding:12px 14px;
-    border-radius:8px;
-    font-weight:700;
-    cursor:pointer;
-    transition:background .12s;
+  small {
+    display: block;
+    margin-top: -8px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: #555;
   }
-  button[type="submit"]:hover{ background:var(--blue-dark); }
 
-  .message{ text-align:center; margin-top:12px; font-weight:700; }
-  .message.success{ color: #0a8a3f; }
-  .message.error{ color:#cc2b2b; }
+  .country-list {
+    position: absolute;
+    width: 100%;
+    background: white;
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+    border-radius: 6px;
+    z-index: 10;
+    display: none;
+  }
 
-  /* equal spacing fix for date input small browsers */
-  input[type="date"]::-webkit-datetime-edit { padding:8px 0; }
+  .country-list div {
+    padding: 8px;
+    cursor: pointer;
+  }
 
-  /* small screens */
-  @media (max-width:420px){ .form-container{padding:18px;} .lang-switch button{width:40px;height:34px;} }
+  .country-list div:hover {
+    background: #f0f0f0;
+  }
+
+  .consent {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .consent input {
+    margin-right: 8px;
+  }
+
+  button[type="submit"] {
+    width: 100%;
+    padding: 12px 0;
+    background-color: #0088CC;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+  }
+
+  button[type="submit"]:hover {
+    background-color: #006699;
+  }
+
+  .message {
+    text-align: center;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+
+  .message.success { color: #008800; }
+  .message.error { color: #CC0000; }
 </style>
 </head>
 <body>
 
-<div class="form-container" role="form" aria-label="Registration form">
+<div class="form-container">
   <h3 id="formTitle">Регистрация</h3>
 
-  <div class="lang-switch" role="tablist" aria-label="Language switch">
-    <button type="button" data-lang="ru" class="active" aria-pressed="true">RU</button>
-    <button type="button" data-lang="ro" aria-pressed="false">RO</button>
-    <button type="button" data-lang="en" aria-pressed="false">EN</button>
+  <div class="lang-switcher">
+    <button type="button" data-lang="ru" class="active">RU</button>
+    <button type="button" data-lang="ro">RO</button>
+    <button type="button" data-lang="en">EN</button>
   </div>
 
-  <form id="registrationForm" autocomplete="on" novalidate>
-    <!-- COUNTRY (search + dropdown) -->
-    <div class="field country-dropdown">
-      <label class="visually-hidden" for="countrySearch">Страна</label>
-      <input id="countrySearch" name="countrySearch" type="search" placeholder="Поиск страны..." autocomplete="off" />
-      <div id="countryList" class="country-list" role="listbox" aria-label="Country list"></div>
-      <!-- hidden values -->
-      <input type="hidden" id="countryHidden" name="country">
-      <input type="hidden" id="timezoneHidden" name="timezone">
-      <input type="hidden" id="countryCodeHidden" name="country_code">
-    </div>
+  <form id="registrationForm">
+    <label for="countrySearch" id="countryLabel">Страна</label>
+    <input type="search" id="countrySearch" placeholder="Поиск страны..." autocomplete="off">
+    <div id="countryList" class="country-list"></div>
 
-    <!-- PHONE -->
-    <div class="field">
-      <label class="visually-hidden" for="phoneInput">Телефон</label>
-      <input id="phoneInput" name="phone" type="tel" placeholder="Введите номер телефона" />
-    </div>
+    <label for="phoneInput" id="phoneLabel">Телефон</label>
+    <input type="tel" id="phoneInput" name="phone" placeholder="Введите номер телефона">
 
-    <!-- FULL NAME -->
-    <div class="field">
-      <label class="visually-hidden" for="fullNameInput">ФИО</label>
-      <input id="fullNameInput" name="fullName" type="text" placeholder="Введите ваше ФИО" />
-    </div>
+    <label for="fullNameInput" id="fullnameLabel">ФИО</label>
+    <input type="text" id="fullNameInput" name="fullName" placeholder="Введите ваше ФИО">
 
-    <!-- EMAIL -->
-    <div class="field">
-      <label class="visually-hidden" for="emailInput">Email</label>
-      <input id="emailInput" name="email" type="email" placeholder="Введите ваш Email" />
-    </div>
+    <label for="emailInput" id="emailLabel">Email</label>
+    <input type="email" id="emailInput" name="email" placeholder="Введите ваш Email">
 
-    <!-- BIRTHDATE -->
-    <div class="field">
-      <label class="visually-hidden" for="birthDateInput">Дата рождения</label>
-      <input id="birthDateInput" name="birthDate" type="date" />
-    </div>
+    <label for="birthDateInput" id="birthDateLabel">Дата рождения</label>
+    <input id="birthDateInput" name="birthDate" type="date">
+    <small id="birthHelp">Укажите дату вашего рождения (не сегодняшнюю дату)</small>
 
-    <!-- CONSENT -->
     <div class="consent">
-      <input id="consentCheckbox" name="consent" type="checkbox" />
-      <label id="consentLabel" for="consentCheckbox">Я согласен на обработку персональных данных</label>
+      <input type="checkbox" id="consentCheck">
+      <label for="consentCheck" id="consentLabel">Я согласен на обработку персональных данных</label>
     </div>
 
-    <!-- hidden chat_id -->
-    <input type="hidden" id="chat_id" name="chat_id" />
+    <input type="hidden" name="country" id="countryHidden">
+    <input type="hidden" name="timezone" id="timezoneHidden">
+    <input type="hidden" name="chat_id" id="chat_id">
 
     <button type="submit" id="submitBtn">Отправить</button>
-    <div id="formMessage" class="message" aria-live="polite"></div>
+    <div id="formMessage" class="message"></div>
   </form>
 </div>
 
 <script>
-/* --------- countries dataset (names in RU/EN/RO variants, timezone offset relative to Chisinau (UTC+2), and phone code) --------- */
 const countries = [
-  { names:["Молдова","Moldova","Republica Moldova"], offset: 0, code:"+373" },
-  { names:["Россия","Russia","Rus"], offset: 1, code:"+7" },
-  { names:["Украина","Ukraine","Ucraina","Ukraina (Kyiv)"], offset: 0, code:"+380" },
-  { names:["Румыния","Romania","România"], offset: 0, code:"+40" },
-  { names:["Греция","Greece","Grecia"], offset: 0, code:"+30" },
-  { names:["Турция","Turkey","Turcia"], offset: 1, code:"+90" },
-  { names:["Германия","Germany","Germania"], offset:-1, code:"+49" },
-  { names:["Франция","France","Franța"], offset:-1, code:"+33" },
-  { names:["Италия","Italy","Italia"], offset:-1, code:"+39" },
-  { names:["Испания","Spain","Spania"], offset:-1, code:"+34" },
-  { names:["Польша","Poland","Polonia"], offset:-1, code:"+48" },
-  { names:["Чехия","Czechia","Cehia"], offset:-1, code:"+420" },
-  { names:["США","USA","United States","Statele Unite"], offset:-7, code:"+1" },
-  { names:["Канада","Canada"], offset:-7, code:"+1" },
-  { names:["ОАЭ","UAE","United Arab Emirates","الإمارات"], offset:2, code:"+971" }
+  { name: ["Молдова","Moldova"], code: "+373", offset: "0" },
+  { name: ["Россия","Russia","Москва","Moscow"], code: "+7", offset: "+1" },
+  { name: ["Украина","Ukraine","Киев","Kyiv"], code: "+380", offset: "0" },
+  { name: ["Беларусь","Belarus"], code: "+375", offset: "+1" },
+  { name: ["Казахстан","Kazakhstan"], code: "+7", offset: "+4" },
+  { name: ["Турция","Turkey"], code: "+90", offset: "+1" },
+  { name: ["Греция","Greece"], code: "+30", offset: "0" },
+  { name: ["ОАЭ","UAE","Dubai"], code: "+971", offset: "+2" },
+  { name: ["США","USA","United States"], code: "+1", offset: "-7" },
 ];
 
-/* --------- translations --------- */
 const translations = {
   ru: {
     formTitle: "Регистрация",
-    place_country: "Поиск страны...",
-    place_phone: "Введите номер телефона",
-    place_fullname: "Введите ваше ФИО",
-    place_email: "Введите ваш Email",
-    place_birth: "Дата рождения",
+    country: "Страна", place_country: "Поиск страны...",
+    phone: "Телефон", place_phone: "Введите номер телефона",
+    fullname: "ФИО", place_fullname: "Введите ваше ФИО",
+    email: "Email", place_email: "Введите ваш Email",
+    birth: "Дата рождения", birth_help: "Укажите дату вашего рождения (не сегодняшнюю дату)",
     consent: "Я согласен на обработку персональных данных",
-    submit: "Отправить",
-    success: "Данные успешно отправлены! ✅",
+    submit: "Отправить", success: "Данные успешно отправлены! ✅",
     fill_all: "Пожалуйста, заполните все поля и подтвердите согласие."
   },
   ro: {
     formTitle: "Înregistrare",
-    place_country: "Căutați țara...",
-    place_phone: "Introduceți numărul de telefon",
-    place_fullname: "Introduceți numele complet",
-    place_email: "Introduceți emailul",
-    place_birth: "Data nașterii",
+    country: "Țara", place_country: "Căutați țara...",
+    phone: "Telefon", place_phone: "Introduceți numărul de telefon",
+    fullname: "Nume complet", place_fullname: "Introduceți numele complet",
+    email: "Email", place_email: "Introduceți emailul",
+    birth: "Data nașterii", birth_help: "Introduceți data nașterii dvs. (nu data de azi)",
     consent: "Sunt de acord cu prelucrarea datelor personale",
-    submit: "Trimite",
-    success: "Datele au fost trimise cu succes! ✅",
+    submit: "Trimite", success: "Datele au fost trimise cu succes! ✅",
     fill_all: "Vă rugăm să completați toate câmpurile și să confirmați consimțământul."
   },
   en: {
     formTitle: "Registration",
-    place_country: "Search country...",
-    place_phone: "Enter your phone number",
-    place_fullname: "Enter your full name",
-    place_email: "Enter your email",
-    place_birth: "Date of birth",
+    country: "Country", place_country: "Search country...",
+    phone: "Phone", place_phone: "Enter your phone number",
+    fullname: "Full Name", place_fullname: "Enter your full name",
+    email: "Email", place_email: "Enter your email",
+    birth: "Date of Birth", birth_help: "Please enter your date of birth (not today)",
     consent: "I agree to the processing of personal data",
-    submit: "Submit",
-    success: "Data sent successfully! ✅",
+    submit: "Submit", success: "Data sent successfully! ✅",
     fill_all: "Please fill in all fields and confirm consent."
   }
 };
 
-/* --------- DOM elements --------- */
-const countrySearch = document.getElementById('countrySearch');
-const countryList = document.getElementById('countryList');
+const searchInput = document.getElementById('countrySearch');
+const countryListDiv = document.getElementById('countryList');
+const phoneInput = document.getElementById('phoneInput');
 const countryHidden = document.getElementById('countryHidden');
 const timezoneHidden = document.getElementById('timezoneHidden');
-const countryCodeHidden = document.getElementById('countryCodeHidden');
-const phoneInput = document.getElementById('phoneInput');
-const consentCheckbox = document.getElementById('consentCheckbox');
-const form = document.getElementById('registrationForm');
-const formMessage = document.getElementById('formMessage');
-const currentLangBtn = document.querySelector('.lang-switch button.active');
+const langButtons = document.querySelectorAll('.lang-switcher button');
 
-let currentLang = currentLangBtn ? currentLangBtn.dataset.lang : 'ru';
-let selectedIndex = -1; // for keyboard navigation
-
-/* --------- helper functions --------- */
 function setPlaceholders(lang){
   const t = translations[lang];
   document.getElementById('formTitle').textContent = t.formTitle;
-  countrySearch.placeholder = t.place_country;
+  document.getElementById('countryLabel').textContent = t.country;
+  searchInput.placeholder = t.place_country;
+  document.getElementById('phoneLabel').textContent = t.phone;
   phoneInput.placeholder = t.place_phone;
+  document.getElementById('fullnameLabel').textContent = t.fullname;
   document.getElementById('fullNameInput').placeholder = t.place_fullname;
+  document.getElementById('emailLabel').textContent = t.email;
   document.getElementById('emailInput').placeholder = t.place_email;
-  document.getElementById('birthDateInput').placeholder = t.place_birth;
+  document.getElementById('birthDateLabel').textContent = t.birth;
+  document.getElementById('birthHelp').textContent = t.birth_help;
   document.getElementById('consentLabel').textContent = t.consent;
   document.getElementById('submitBtn').textContent = t.submit;
+  document.getElementById('birthDateInput').setAttribute('lang', lang);
 }
 
-/* build country list matching function: matches query against all aliases (case-insensitive) */
-function findMatches(query){
-  if (!query) return countries.slice(0, 40); // show top list if empty (limited)
-  const q = query.trim().toLowerCase();
-  return countries.filter(c => c.names.some(n => n.toLowerCase().includes(q)));
-}
-
-/* render dropdown */
-function renderList(items){
-  countryList.innerHTML = '';
-  if (!items.length){ countryList.style.display = 'none'; return; }
-  items.forEach((c, idx) => {
-    const div = document.createElement('div');
-    div.className = 'country-item';
-    div.tabIndex = -1;
-    div.dataset.index = idx;
-    div.innerHTML = `<strong>${c.names[0]}</strong> — ${c.code} <span style="color:#666; margin-left:8px; font-size:13px">UTC ${(c.offset>=0?"+":"") + c.offset}</span>`;
-    div.addEventListener('mousedown', (ev)=>{ // mousedown so selection before blur
-      ev.preventDefault();
-      chooseCountry(c);
+// генерация списка стран
+searchInput.addEventListener('input', () => {
+  const query = searchInput.value.toLowerCase();
+  countryListDiv.innerHTML = '';
+  if (query.length > 0) {
+    const filtered = countries.filter(c => c.name.some(n => n.toLowerCase().includes(query)));
+    filtered.forEach(c => {
+      const div = document.createElement('div');
+      div.textContent = `${c.name[0]} (UTC${c.offset})`;
+      div.addEventListener('click', () => {
+        searchInput.value = c.name[0];
+        countryHidden.value = c.name[0];
+        phoneInput.value = c.code;
+        timezoneHidden.value = c.offset;
+        countryListDiv.style.display = 'none';
+      });
+      countryListDiv.appendChild(div);
     });
-    countryList.appendChild(div);
-  });
-  countryList.style.display = 'block';
-}
-
-/* choose a country object -> populate hidden fields and phone code */
-function chooseCountry(c){
-  countrySearch.value = c.names[0];
-  countryHidden.value = c.names[0];
-  timezoneHidden.value = String(c.offset);
-  countryCodeHidden.value = c.code;
-  // set phone prefix only if input empty or doesn't already start with + 
-  if (!phoneInput.value || phoneInput.value.trim() === '' || !phoneInput.value.trim().startsWith('+')) {
-    phoneInput.value = c.code + ' ';
-  }
-  countryList.style.display = 'none';
-}
-
-/* keyboard navigation inside country list */
-function highlightIndex(i){
-  const items = countryList.querySelectorAll('.country-item');
-  items.forEach((el, idx)=>el.classList.toggle('active', idx===i));
-  selectedIndex = i;
-}
-
-/* clear selection */
-function clearSelection(){
-  countryHidden.value = '';
-  timezoneHidden.value = '';
-  countryCodeHidden.value = '';
-}
-
-/* --------- event listeners --------- */
-/* show list on focus, and filter while typing */
-countrySearch.addEventListener('focus', ()=> {
-  renderList(findMatches(countrySearch.value));
-});
-countrySearch.addEventListener('input', ()=> {
-  selectedIndex = -1;
-  renderList(findMatches(countrySearch.value));
-});
-countrySearch.addEventListener('keydown', (e)=>{
-  const items = countryList.querySelectorAll('.country-item');
-  if (!items.length) return;
-  if (e.key === 'ArrowDown'){ e.preventDefault(); let next = Math.min(items.length-1, selectedIndex+1); highlightIndex(next); items[next].scrollIntoView({block:'nearest'}); }
-  else if (e.key === 'ArrowUp'){ e.preventDefault(); let prev = Math.max(0, selectedIndex-1); highlightIndex(prev); items[prev].scrollIntoView({block:'nearest'}); }
-  else if (e.key === 'Enter'){ e.preventDefault(); if (selectedIndex>=0 && items[selectedIndex]) { items[selectedIndex].dispatchEvent(new MouseEvent('mousedown')); } else { // try to match exact by typed
-      const q = countrySearch.value.trim().toLowerCase();
-      const exact = countries.find(c => c.names.some(n=>n.toLowerCase()===q));
-      if (exact) chooseCountry(exact);
-    }
+    countryListDiv.style.display = filtered.length ? 'block' : 'none';
+  } else {
+    countryListDiv.style.display = 'none';
   }
 });
 
-/* hide list on blur with a small delay to allow click */
-countrySearch.addEventListener('blur', ()=> {
-  setTimeout(()=>{ countryList.style.display = 'none'; }, 160);
-});
-
-/* global click outside -> hide */
-document.addEventListener('click', (e)=>{
-  if (!e.composedPath().includes(countryList) && e.target !== countrySearch){
-    countryList.style.display = 'none';
-  }
-});
-
-/* language switch */
-document.querySelectorAll('.lang-switch button').forEach(btn=>{
+// переключение языка
+langButtons.forEach(btn=>{
   btn.addEventListener('click', ()=>{
-    document.querySelectorAll('.lang-switch button').forEach(b=>{ b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
-    btn.classList.add('active'); btn.setAttribute('aria-pressed','true');
-    currentLang = btn.dataset.lang;
-    setPlaceholders(currentLang);
+    langButtons.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    setPlaceholders(btn.dataset.lang);
   });
 });
 
-/* set chat_id from URL if provided */
-(function setChatIdFromUrl(){
-  const params = new URLSearchParams(window.location.search);
-  const chatId = params.get('chat_id') || '';
-  document.getElementById('chat_id').value = chatId;
-})();
+// chat_id из URL
+const chatIdField = document.getElementById('chat_id');
+const urlParams = new URLSearchParams(window.location.search);
+chatIdField.value = urlParams.get('chat_id') || '';
 
-/* submit handler: simple validation and POST to webhook */
-form.addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  formMessage.textContent = '';
-  formMessage.className = 'message';
+const form = document.getElementById('registrationForm');
+const formMessage = document.getElementById('formMessage');
 
-  // validation
-  const country = countryHidden.value.trim();
-  const phone = phoneInput.value.trim();
-  const fullName = document.getElementById('fullNameInput').value.trim();
-  const email = document.getElementById('emailInput').value.trim();
-  const birthDate = document.getElementById('birthDateInput').value;
-  const consent = consentCheckbox.checked;
-  const timezone = timezoneHidden.value;
-  const countryCode = countryCodeHidden.value;
-  const chatId = document.getElementById('chat_id').value;
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    formMessage.textContent = '';
+    formMessage.className = 'message';
 
-  if (!country || !phone || !fullName || !email || !birthDate || !consent){
-    formMessage.textContent = translations[currentLang].fill_all;
-    formMessage.classList.add('error');
-    return;
-  }
-
-  const payload = { country, phone, fullName, email, birthDate, timezone, country_code:countryCode, chat_id:chatId };
-
-  try {
-    // <-- Вставь сюда свой webhook URL -->
-    const webhookUrl = 'https://hook.eu2.make.com/1unspxkdfik4bgnhsvpra9m71urdffcj';
-
-    const resp = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
-    });
-
-    if (resp.ok){
-      formMessage.textContent = translations[currentLang].success;
-      formMessage.classList.add('success');
-      form.reset();
-      clearSelection();
-    } else {
-      const txt = await resp.text();
-      formMessage.textContent = 'Ошибка отправки: ' + resp.status + ' ' + txt;
+    if (!document.getElementById('consentCheck').checked) {
+      formMessage.textContent = translations.ru.fill_all;
       formMessage.classList.add('error');
+      return;
     }
-  } catch(err){
-    formMessage.textContent = 'Ошибка сети. Попробуйте позже.';
-    formMessage.classList.add('error');
-  }
+
+    const data = {
+        fullName: form.fullName.value.trim(),
+        email: form.email.value.trim(),
+        phone: form.phone.value.trim(),
+        birthDate: form.birthDate.value,
+        country: countryHidden.value,
+        timezone: timezoneHidden.value,
+        chat_id: chatIdField.value
+    };
+
+    if (!data.fullName || !data.email || !data.phone || !data.birthDate || !data.country) {
+        formMessage.textContent = translations.ru.fill_all;
+        formMessage.classList.add('error');
+        return;
+    }
+
+    try {
+        const webhookUrl = 'https://hook.eu2.make.com/1unspxkdfik4bgnhsvpra9m71urdffcj';
+        const response = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            formMessage.textContent = translations.ru.success;
+            formMessage.classList.add('success');
+            form.reset();
+        } else {
+            const resultText = await response.text();
+            formMessage.textContent = `Ошибка: ${response.status}. ${resultText}`;
+            formMessage.classList.add('error');
+        }
+    } catch (err) {
+        formMessage.textContent = 'Ошибка сети.';
+        formMessage.classList.add('error');
+    }
 });
 
-/* initial placeholders */
-setPlaceholders(currentLang);
+// выставляем стартовый язык
+setPlaceholders("ru");
 </script>
 
 </body>
