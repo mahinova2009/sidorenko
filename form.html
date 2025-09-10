@@ -21,6 +21,7 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     width: 100%;
     max-width: 400px;
+    position: relative;
   }
 
   h3 {
@@ -89,15 +90,23 @@
     color: #555;
   }
 
+  .country-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
   .country-list {
     position: absolute;
-    width: 100%;
+    top: 100%;
+    left: 0;
+    right: 0;
     background: white;
     border: 1px solid #ccc;
-    max-height: 150px;
+    max-height: 180px;
     overflow-y: auto;
     border-radius: 6px;
-    z-index: 10;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     display: none;
   }
 
@@ -160,8 +169,10 @@
 
   <form id="registrationForm">
     <label for="countrySearch" id="countryLabel">Страна</label>
-    <input type="search" id="countrySearch" placeholder="Поиск страны..." autocomplete="off">
-    <div id="countryList" class="country-list"></div>
+    <div class="country-wrapper">
+      <input type="search" id="countrySearch" placeholder="Поиск страны..." autocomplete="off">
+      <div id="countryList" class="country-list"></div>
+    </div>
 
     <label for="phoneInput" id="phoneLabel">Телефон</label>
     <input type="tel" id="phoneInput" name="phone" placeholder="Введите номер телефона">
@@ -210,7 +221,7 @@ const translations = {
     phone: "Телефон", place_phone: "Введите номер телефона",
     fullname: "ФИО", place_fullname: "Введите ваше ФИО",
     email: "Email", place_email: "Введите ваш Email",
-    birth: "Дата рождения", birth_help: "Укажите дату вашего рождения.",
+    birth: "Дата рождения", birth_help: "Укажите дату вашего рождения (не сегодняшнюю дату)",
     consent: "Я согласен на обработку персональных данных",
     submit: "Отправить", success: "Данные успешно отправлены! ✅",
     fill_all: "Пожалуйста, заполните все поля и подтвердите согласие."
@@ -221,7 +232,7 @@ const translations = {
     phone: "Telefon", place_phone: "Introduceți numărul de telefon",
     fullname: "Nume complet", place_fullname: "Introduceți numele complet",
     email: "Email", place_email: "Introduceți emailul",
-    birth: "Data nașterii", birth_help: "Introduceți data nașterii dvs.",
+    birth: "Data nașterii", birth_help: "Introduceți data nașterii dvs. (nu data de azi)",
     consent: "Sunt de acord cu prelucrarea datelor personale",
     submit: "Trimite", success: "Datele au fost trimise cu succes! ✅",
     fill_all: "Vă rugăm să completați toate câmpurile și să confirmați consimțământul."
@@ -232,7 +243,7 @@ const translations = {
     phone: "Phone", place_phone: "Enter your phone number",
     fullname: "Full Name", place_fullname: "Enter your full name",
     email: "Email", place_email: "Enter your email",
-    birth: "Date of Birth", birth_help: "Please enter your date of birth.",
+    birth: "Date of Birth", birth_help: "Please enter your date of birth (not today)",
     consent: "I agree to the processing of personal data",
     submit: "Submit", success: "Data sent successfully! ✅",
     fill_all: "Please fill in all fields and confirm consent."
@@ -264,7 +275,6 @@ function setPlaceholders(lang){
   document.getElementById('birthDateInput').setAttribute('lang', lang);
 }
 
-// генерация списка стран
 searchInput.addEventListener('input', () => {
   const query = searchInput.value.toLowerCase();
   countryListDiv.innerHTML = '';
@@ -288,7 +298,6 @@ searchInput.addEventListener('input', () => {
   }
 });
 
-// переключение языка
 langButtons.forEach(btn=>{
   btn.addEventListener('click', ()=>{
     langButtons.forEach(b=>b.classList.remove('active'));
@@ -297,7 +306,6 @@ langButtons.forEach(btn=>{
   });
 });
 
-// chat_id из URL
 const chatIdField = document.getElementById('chat_id');
 const urlParams = new URLSearchParams(window.location.search);
 chatIdField.value = urlParams.get('chat_id') || '';
@@ -355,7 +363,6 @@ form.addEventListener('submit', async (e) => {
     }
 });
 
-// выставляем стартовый язык
 setPlaceholders("ru");
 </script>
 
