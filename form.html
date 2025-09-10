@@ -26,12 +26,12 @@
   h3 {
     text-align: center;
     color: #0088CC;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
   }
 
   label {
     display: block;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
     font-weight: 500;
     color: #333333;
   }
@@ -40,8 +40,7 @@
   input[type="email"],
   input[type="tel"],
   input[type="date"],
-  input[type="search"],
-  select {
+  input[type="search"] {
     width: 100%;
     padding: 10px 12px;
     border: 1px solid #CCCCCC;
@@ -49,9 +48,10 @@
     font-size: 15px;
     transition: border-color 0.2s;
     box-sizing: border-box;
+    margin-bottom: 15px;
   }
 
-  input:focus, select:focus {
+  input:focus {
     outline: none;
     border-color: #0088CC;
     box-shadow: 0 0 4px rgba(0,136,204,0.3);
@@ -68,7 +68,7 @@
     cursor: pointer;
     transition: background-color 0.2s;
     font-weight: bold;
-    margin-top: 20px;
+    margin-top: 15px;
   }
 
   button:hover {
@@ -81,16 +81,39 @@
     font-weight: bold;
   }
 
-  .message.success {
-    color: #008800;
+  .message.success { color: #008800; }
+  .message.error { color: #CC0000; }
+
+  .lang-switch {
+    text-align: center;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+  .lang-switch button {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #ccc;
+    background: #f8f8f8;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #333;
+  }
+  .lang-switch button.active {
+    background: #0088CC;
+    color: #fff;
   }
 
-  .message.error {
-    color: #CC0000;
+  .consent {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    font-size: 14px;
   }
-
-  .country-dropdown {
-    position: relative;
+  .consent input {
+    margin-right: 8px;
   }
 
   .country-list {
@@ -104,31 +127,12 @@
     z-index: 10;
     display: none;
   }
-
   .country-list div {
     padding: 8px;
     cursor: pointer;
   }
-
   .country-list div:hover {
     background: #f0f0f0;
-  }
-
-  .lang-switch {
-    text-align: center;
-    margin-bottom: 15px;
-  }
-  .lang-switch button {
-    margin: 0 5px;
-    padding: 5px 10px;
-    border: 1px solid #ccc;
-    background: #f8f8f8;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  .lang-switch button.active {
-    background: #0088CC;
-    color: #fff;
   }
 </style>
 </head>
@@ -142,27 +146,21 @@
     <button data-lang="en">EN</button>
   </div>
   <form id="registrationForm">
-    <label id="labelCountry">Страна</label>
-    <div class="country-dropdown">
-      <input type="search" id="countrySearch" placeholder="Поиск страны..." autocomplete="off">
-      <div id="countryList" class="country-list"></div>
-    </div>
+    <input type="search" id="countrySearch" placeholder="Поиск страны..." autocomplete="off">
+    <div id="countryList" class="country-list"></div>
 
     <input type="hidden" name="country" id="countryHidden">
     <input type="hidden" name="timezone" id="timezoneHidden">
 
-    <label id="labelPhone">Телефон
-      <input type="tel" name="phone" id="phoneInput" required placeholder="Введите номер телефона">
-    </label>
-    <label id="labelFullName">ФИО
-      <input type="text" name="fullName" required placeholder="Введите ваше ФИО">
-    </label>
-    <label id="labelEmail">Email
-      <input type="email" name="email" required placeholder="Введите ваш Email">
-    </label>
-    <label id="labelBirthDate">Дата рождения
-      <input type="date" name="birthDate" required>
-    </label>
+    <input type="tel" name="phone" id="phoneInput" required placeholder="Введите номер телефона">
+    <input type="text" name="fullName" id="fullNameInput" required placeholder="Введите ваше ФИО">
+    <input type="email" name="email" id="emailInput" required placeholder="Введите ваш Email">
+    <input type="date" name="birthDate" id="birthDateInput" required>
+
+    <div class="consent">
+      <input type="checkbox" id="consentCheckbox" required>
+      <label for="consentCheckbox" id="consentLabel">Я согласен на обработку персональных данных</label>
+    </div>
 
     <input type="hidden" name="chat_id" id="chat_id">
 
@@ -172,75 +170,44 @@
 </div>
 
 <script>
-const countries = [
-  { names: ["Молдова","Moldova"], offset: "0", code: "+373" },
-  { names: ["Россия","Russia (Moscow)"], offset: "+1", code: "+7" },
-  { names: ["Украина","Ukraine (Kyiv)"], offset: "0", code: "+380" },
-  { names: ["Румыния","Romania"], offset: "0", code: "+40" },
-  { names: ["Греция","Greece"], offset: "0", code: "+30" },
-  { names: ["Турция","Turkey"], offset: "+1", code: "+90" },
-  { names: ["США","USA","United States"], offset: "-7", code: "+1" }
-];
-
 const translations = {
   ru: {
     title: "Регистрация",
-    country: "Страна",
-    phone: "Телефон",
-    fullName: "ФИО",
-    email: "Email",
-    birthDate: "Дата рождения",
+    placeholders: {
+      country: "Поиск страны...",
+      phone: "Введите номер телефона",
+      fullName: "Введите ваше ФИО",
+      email: "Введите ваш Email",
+      birthDate: "Дата рождения"
+    },
+    consent: "Я согласен на обработку персональных данных",
     submit: "Отправить"
   },
   ro: {
     title: "Înregistrare",
-    country: "Țara",
-    phone: "Telefon",
-    fullName: "Nume complet",
-    email: "Email",
-    birthDate: "Data nașterii",
+    placeholders: {
+      country: "Căutare țară...",
+      phone: "Introduceți numărul de telefon",
+      fullName: "Introduceți numele complet",
+      email: "Introduceți emailul",
+      birthDate: "Data nașterii"
+    },
+    consent: "Sunt de acord cu prelucrarea datelor personale",
     submit: "Trimite"
   },
   en: {
     title: "Registration",
-    country: "Country",
-    phone: "Phone",
-    fullName: "Full Name",
-    email: "Email",
-    birthDate: "Date of Birth",
+    placeholders: {
+      country: "Search country...",
+      phone: "Enter your phone number",
+      fullName: "Enter your full name",
+      email: "Enter your email",
+      birthDate: "Date of birth"
+    },
+    consent: "I agree to the processing of personal data",
     submit: "Submit"
   }
 };
-
-const searchInput = document.getElementById('countrySearch');
-const listDiv = document.getElementById('countryList');
-const countryHidden = document.getElementById('countryHidden');
-const timezoneHidden = document.getElementById('timezoneHidden');
-const phoneInput = document.getElementById('phoneInput');
-
-// вывод списка стран
-searchInput.addEventListener('input', () => {
-  const query = searchInput.value.toLowerCase();
-  listDiv.innerHTML = '';
-  if (query.length > 0) {
-    const filtered = countries.filter(c => c.names.some(n => n.toLowerCase().includes(query)));
-    filtered.forEach(c => {
-      const div = document.createElement('div');
-      div.textContent = `${c.names[0]} (UTC${c.offset})`;
-      div.addEventListener('click', () => {
-        searchInput.value = c.names[0];
-        countryHidden.value = c.names[0];
-        timezoneHidden.value = c.offset;
-        phoneInput.value = c.code + " ";
-        listDiv.style.display = 'none';
-      });
-      listDiv.appendChild(div);
-    });
-    listDiv.style.display = filtered.length ? 'block' : 'none';
-  } else {
-    listDiv.style.display = 'none';
-  }
-});
 
 // переключение языков
 document.querySelectorAll('.lang-switch button').forEach(btn => {
@@ -249,11 +216,12 @@ document.querySelectorAll('.lang-switch button').forEach(btn => {
     btn.classList.add('active');
     const lang = btn.dataset.lang;
     document.getElementById('formTitle').textContent = translations[lang].title;
-    document.getElementById('labelCountry').textContent = translations[lang].country;
-    document.getElementById('labelPhone').childNodes[0].textContent = translations[lang].phone;
-    document.getElementById('labelFullName').childNodes[0].textContent = translations[lang].fullName;
-    document.getElementById('labelEmail').childNodes[0].textContent = translations[lang].email;
-    document.getElementById('labelBirthDate').childNodes[0].textContent = translations[lang].birthDate;
+    document.getElementById('countrySearch').placeholder = translations[lang].placeholders.country;
+    document.getElementById('phoneInput').placeholder = translations[lang].placeholders.phone;
+    document.getElementById('fullNameInput').placeholder = translations[lang].placeholders.fullName;
+    document.getElementById('emailInput').placeholder = translations[lang].placeholders.email;
+    document.getElementById('birthDateInput').placeholder = translations[lang].placeholders.birthDate;
+    document.getElementById('consentLabel').textContent = translations[lang].consent;
     document.getElementById('submitBtn').textContent = translations[lang].submit;
   });
 });
@@ -262,6 +230,14 @@ document.querySelectorAll('.lang-switch button').forEach(btn => {
 const chatIdField = document.getElementById('chat_id');
 const urlParams = new URLSearchParams(window.location.search);
 chatIdField.value = urlParams.get('chat_id') || '';
+
+// имитация выбора страны и автокода (пример для Молдовы)
+document.getElementById('countrySearch').addEventListener('input', (e) => {
+  if (e.target.value.toLowerCase().includes("молд") || e.target.value.toLowerCase().includes("mold")) {
+    document.getElementById('phoneInput').value = "+373 ";
+    document.getElementById('countryHidden').value = "Молдова";
+  }
+});
 </script>
 
 </body>
