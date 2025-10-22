@@ -1,370 +1,99 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<title>Форма регистрации</title>
-<style>
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #E5E5E5;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-  }
-
-  .form-container {
-    background-color: #FFFFFF;
-    border-radius: 12px;
-    padding: 30px 40px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    width: 100%;
-    max-width: 400px;
-    position: relative;
-  }
-
-  h3 {
-    text-align: center;
-    color: #0088CC;
-    margin-bottom: 15px;
-  }
-
-  .lang-switcher {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-  }
-
-  .lang-switcher button {
-    flex: 1;
-    margin: 0 3px;
-    padding: 8px 0;
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    background-color: #f0f0f0;
-    color: #333;
-    transition: background-color 0.2s;
-  }
-
-  .lang-switcher button.active {
-    background-color: #0088CC;
-    color: #fff;
-  }
-
-  label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 500;
-    color: #333333;
-  }
-
-  input[type="text"],
-  input[type="email"],
-  input[type="tel"],
-  input[type="date"],
-  input[type="search"] {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #CCCCCC;
-    border-radius: 8px;
-    font-size: 15px;
-    margin-bottom: 12px;
-    box-sizing: border-box;
-    transition: border-color 0.2s;
-  }
-
-  input:focus {
-    outline: none;
-    border-color: #0088CC;
-    box-shadow: 0 0 4px rgba(0,136,204,0.3);
-  }
-
-  small {
-    display: block;
-    margin-top: -8px;
-    margin-bottom: 12px;
-    font-size: 13px;
-    color: #555;
-  }
-
-  .country-wrapper {
-    position: relative;
-    width: 100%;
-  }
-
-  .country-list {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: white;
-    border: 1px solid #ccc;
-    max-height: 180px;
-    overflow-y: auto;
-    border-radius: 6px;
-    z-index: 1000;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    display: none;
-  }
-
-  .country-list div {
-    padding: 8px;
-    cursor: pointer;
-  }
-
-  .country-list div:hover {
-    background: #f0f0f0;
-  }
-
-  .consent {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-  }
-
-  .consent input {
-    margin-right: 8px;
-  }
-
-  button[type="submit"] {
-    width: 100%;
-    padding: 12px 0;
-    background-color: #0088CC;
-    color: #FFFFFF;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s;
-  }
-
-  button[type="submit"]:hover {
-    background-color: #006699;
-  }
-
-  .message {
-    text-align: center;
-    margin-top: 10px;
-    font-weight: bold;
-  }
-
-  .message.success { color: #008800; }
-  .message.error { color: #CC0000; }
-</style>
-</head>
-<body>
-
-<div class="form-container">
-  <h3 id="formTitle">Регистрация</h3>
-
-  <div class="lang-switcher">
-    <button type="button" data-lang="ru" class="active">RU</button>
-    <button type="button" data-lang="ro">RO</button>
-    <button type="button" data-lang="en">EN</button>
-  </div>
-
-  <form id="registrationForm">
-    <label for="countrySearch" id="countryLabel">Страна</label>
-    <div class="country-wrapper">
-      <input type="search" id="countrySearch" placeholder="Поиск страны..." autocomplete="off">
-      <div id="countryList" class="country-list"></div>
-    </div>
-
-    <label for="phoneInput" id="phoneLabel">Телефон</label>
-    <input type="tel" id="phoneInput" name="phone" placeholder="Введите номер телефона">
-
-    <label for="fullNameInput" id="fullnameLabel">ФИО</label>
-    <input type="text" id="fullNameInput" name="fullName" placeholder="Введите ваше ФИО">
-
-    <label for="emailInput" id="emailLabel">Email</label>
-    <input type="email" id="emailInput" name="email" placeholder="Введите ваш Email">
-
-    <label for="birthDateInput" id="birthDateLabel">Дата рождения</label>
-    <input id="birthDateInput" name="birthDate" type="date">
-    <small id="birthHelp">Укажите дату вашего рождения (не сегодняшнюю дату)</small>
-
-    <div class="consent">
-      <input type="checkbox" id="consentCheck">
-      <label for="consentCheck" id="consentLabel">Я согласен на обработку персональных данных</label>
-    </div>
-
-    <input type="hidden" name="country" id="countryHidden">
-    <input type="hidden" name="timezone" id="timezoneHidden">
-    <input type="hidden" name="chat_id" id="chat_id">
-
-    <button type="submit" id="submitBtn">Отправить</button>
-    <div id="formMessage" class="message"></div>
-  </form>
-</div>
-
 <script>
-const countries = [
-  { name: ["Молдова","Moldova"], code: "+373", offset: "0" },
-  { name: ["Россия","Russia","Москва","Moscow"], code: "+7", offset: "+1" },
-  { name: ["Украина","Ukraine","Киев","Kyiv"], code: "+380", offset: "0" },
-  { name: ["Беларусь","Belarus"], code: "+375", offset: "+1" },
-  { name: ["Казахстан","Kazakhstan"], code: "+7", offset: "+4" },
-  { name: ["Турция","Turkey"], code: "+90", offset: "+1" },
-  { name: ["Греция","Greece"], code: "+30", offset: "0" },
-  { name: ["ОАЭ","UAE","Dubai"], code: "+971", offset: "+2" },
-  { name: ["США","USA","United States"], code: "+1", offset: "-7" },
-];
+// --- имитация Excel-данных (реально нужно будет подгрузить JSON с Make или Google Sheets API) ---
+let existingUsers = []; // сюда подгрузятся строки из Excel
 
-const translations = {
-  ru: {
-    formTitle: "Регистрация",
-    country: "Страна", place_country: "Поиск страны...",
-    phone: "Телефон", place_phone: "Введите номер телефона",
-    fullname: "ФИО", place_fullname: "Введите ваше ФИО",
-    email: "Email", place_email: "Введите ваш Email",
-    birth: "Дата рождения", birth_help: "Укажите дату вашего рождения (не сегодняшнюю дату)",
-    consent: "Я согласен на обработку персональных данных",
-    submit: "Отправить", success: "Данные успешно отправлены! ✅",
-    fill_all: "Пожалуйста, заполните все поля и подтвердите согласие."
-  },
-  ro: {
-    formTitle: "Înregistrare",
-    country: "Țara", place_country: "Căutați țara...",
-    phone: "Telefon", place_phone: "Introduceți numărul de telefon",
-    fullname: "Nume complet", place_fullname: "Introduceți numele complet",
-    email: "Email", place_email: "Introduceți emailul",
-    birth: "Data nașterii", birth_help: "Introduceți data nașterii dvs. (nu data de azi)",
-    consent: "Sunt de acord cu prelucrarea datelor personale",
-    submit: "Trimite", success: "Datele au fost trimise cu succes! ✅",
-    fill_all: "Vă rugăm să completați toate câmpurile și să confirmați consimțământul."
-  },
-  en: {
-    formTitle: "Registration",
-    country: "Country", place_country: "Search country...",
-    phone: "Phone", place_phone: "Enter your phone number",
-    fullname: "Full Name", place_fullname: "Enter your full name",
-    email: "Email", place_email: "Enter your email",
-    birth: "Date of Birth", birth_help: "Please enter your date of birth (not today)",
-    consent: "I agree to the processing of personal data",
-    submit: "Submit", success: "Data sent successfully! ✅",
-    fill_all: "Please fill in all fields and confirm consent."
+async function loadExistingUsers() {
+  try {
+    const res = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-.../pub?output=csv'); // или свой JSON webhook
+    const text = await res.text();
+    existingUsers = text.split('\n').slice(1).map(line => {
+      const [fullName, email, phone, birthDate, country, timezone, chat_id] = line.split(',');
+      return { fullName: fullName?.trim(), birthDate: birthDate?.trim(), chat_id: chat_id?.trim() };
+    });
+  } catch (e) {
+    console.error('Ошибка загрузки списка:', e);
   }
-};
-
-const searchInput = document.getElementById('countrySearch');
-const countryListDiv = document.getElementById('countryList');
-const phoneInput = document.getElementById('phoneInput');
-const countryHidden = document.getElementById('countryHidden');
-const timezoneHidden = document.getElementById('timezoneHidden');
-const langButtons = document.querySelectorAll('.lang-switcher button');
-
-function setPlaceholders(lang){
-  const t = translations[lang];
-  document.getElementById('formTitle').textContent = t.formTitle;
-  document.getElementById('countryLabel').textContent = t.country;
-  searchInput.placeholder = t.place_country;
-  document.getElementById('phoneLabel').textContent = t.phone;
-  phoneInput.placeholder = t.place_phone;
-  document.getElementById('fullnameLabel').textContent = t.fullname;
-  document.getElementById('fullNameInput').placeholder = t.place_fullname;
-  document.getElementById('emailLabel').textContent = t.email;
-  document.getElementById('emailInput').placeholder = t.place_email;
-  document.getElementById('birthDateLabel').textContent = t.birth;
-  document.getElementById('birthHelp').textContent = t.birth_help;
-  document.getElementById('consentLabel').textContent = t.consent;
-  document.getElementById('submitBtn').textContent = t.submit;
-  document.getElementById('birthDateInput').setAttribute('lang', lang);
 }
 
-searchInput.addEventListener('input', () => {
-  const query = searchInput.value.toLowerCase();
-  countryListDiv.innerHTML = '';
-  if (query.length > 0) {
-    const filtered = countries.filter(c => c.name.some(n => n.toLowerCase().includes(query)));
-    filtered.forEach(c => {
-      const div = document.createElement('div');
-      div.textContent = `${c.name[0]} (UTC${c.offset})`;
-      div.addEventListener('click', () => {
-        searchInput.value = c.name[0];
-        countryHidden.value = c.name[0];
-        phoneInput.value = c.code;
-        timezoneHidden.value = c.offset;
-        countryListDiv.style.display = 'none';
-      });
-      countryListDiv.appendChild(div);
-    });
-    countryListDiv.style.display = filtered.length ? 'block' : 'none';
-  } else {
-    countryListDiv.style.display = 'none';
-  }
-});
+loadExistingUsers();
 
-langButtons.forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    langButtons.forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    setPlaceholders(btn.dataset.lang);
-  });
-});
-
-const chatIdField = document.getElementById('chat_id');
-const urlParams = new URLSearchParams(window.location.search);
-chatIdField.value = urlParams.get('chat_id') || '';
-
-const form = document.getElementById('registrationForm');
-const formMessage = document.getElementById('formMessage');
-
+// --- твой код обработки формы ---
 form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    formMessage.textContent = '';
-    formMessage.className = 'message';
+  e.preventDefault();
+  formMessage.textContent = '';
+  formMessage.className = 'message';
 
-    if (!document.getElementById('consentCheck').checked) {
-      formMessage.textContent = translations.ru.fill_all;
+  if (!document.getElementById('consentCheck').checked) {
+    formMessage.textContent = translations.ru.fill_all;
+    formMessage.classList.add('error');
+    return;
+  }
+
+  const data = {
+    fullName: form.fullName.value.trim(),
+    email: form.email.value.trim(),
+    phone: form.phone.value.trim(),
+    birthDate: form.birthDate.value.trim(),
+    country: countryHidden.value,
+    timezone: timezoneHidden.value,
+    chat_id: chatIdField.value
+  };
+
+  if (!data.fullName || !data.email || !data.phone || !data.birthDate || !data.country) {
+    formMessage.textContent = translations.ru.fill_all;
+    formMessage.classList.add('error');
+    return;
+  }
+
+  // 🔍 Проверяем, есть ли в списке
+  const found = existingUsers.find(u => 
+    u.fullName.toLowerCase() === data.fullName.toLowerCase() && 
+    u.birthDate === data.birthDate
+  );
+
+  if (found) {
+    if (found.chat_id) {
+      formMessage.textContent = "Пользователь с такими данными уже зарегистрирован.";
       formMessage.classList.add('error');
       return;
-    }
-
-    const data = {
-        fullName: form.fullName.value.trim(),
-        email: form.email.value.trim(),
-        phone: form.phone.value.trim(),
-        birthDate: form.birthDate.value,
-        country: countryHidden.value,
-        timezone: timezoneHidden.value,
-        chat_id: chatIdField.value
-    };
-
-    if (!data.fullName || !data.email || !data.phone || !data.birthDate || !data.country) {
-        formMessage.textContent = translations.ru.fill_all;
+    } else {
+      if (confirm("Пользователь с такими данными уже есть, но без chat_id. Подтвердите, чтобы добавить chat_id и продолжить.")) {
+        // записываем его chat_id через тот же webhook
+        await fetch('https://hook.eu2.make.com/1unspxkdfik4bgnhsvpra9m71urdffcj', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(data)
+        });
+        formMessage.textContent = "chat_id добавлен, вы можете продолжить ✅";
+        formMessage.classList.add('success');
+        return;
+      } else {
+        formMessage.textContent = "Регистрация отменена.";
         formMessage.classList.add('error');
         return;
+      }
     }
+  }
 
-    try {
-        const webhookUrl = 'https://hook.eu2.make.com/1unspxkdfik4bgnhsvpra9m71urdffcj';
-        const response = await fetch(webhookUrl, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(data)
-        });
+  // 🆕 Если не найден — обычная регистрация
+  try {
+    const response = await fetch('https://hook.eu2.make.com/1unspxkdfik4bgnhsvpra9m71urdffcj', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    });
 
-        if (response.ok) {
-            formMessage.textContent = translations.ru.success;
-            formMessage.classList.add('success');
-            form.reset();
-        } else {
-            const resultText = await response.text();
-            formMessage.textContent = `Ошибка: ${response.status}. ${resultText}`;
-            formMessage.classList.add('error');
-        }
-    } catch (err) {
-        formMessage.textContent = 'Ошибка сети.';
-        formMessage.classList.add('error');
+    if (response.ok) {
+      formMessage.textContent = translations.ru.success;
+      formMessage.classList.add('success');
+      form.reset();
+    } else {
+      formMessage.textContent = `Ошибка: ${response.status}`;
+      formMessage.classList.add('error');
     }
+  } catch (err) {
+    formMessage.textContent = 'Ошибка сети.';
+    formMessage.classList.add('error');
+  }
 });
-
-setPlaceholders("ru");
 </script>
-
-</body>
-</html>
