@@ -29,30 +29,6 @@
     margin-bottom: 15px;
   }
 
-  .lang-switcher {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-  }
-
-  .lang-switcher button {
-    flex: 1;
-    margin: 0 3px;
-    padding: 8px 0;
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    background-color: #f0f0f0;
-    color: #333;
-    transition: background-color 0.2s;
-  }
-
-  .lang-switcher button.active {
-    background-color: #0088CC;
-    color: #fff;
-  }
-
   label {
     display: block;
     margin-bottom: 5px;
@@ -152,153 +128,121 @@
 <div class="form-container">
   <h3 id="formTitle">Регистрация</h3>
 
-  <div class="lang-switcher">
-    <button type="button" data-lang="ru" class="active">RU</button>
-    <button type="button" data-lang="ro">RO</button>
-    <button type="button" data-lang="en">EN</button>
-  </div>
-
   <form id="registrationForm">
-    <label for="countrySearch" id="countryLabel">Страна</label>
+    <label for="countrySearch">Страна</label>
     <div class="country-wrapper">
       <input type="search" id="countrySearch" placeholder="Поиск страны..." autocomplete="off">
       <div id="countryList" class="country-list"></div>
     </div>
 
-    <label for="phoneInput" id="phoneLabel">Телефон</label>
+    <label for="phoneInput">Телефон</label>
     <input type="tel" id="phoneInput" name="phone" placeholder="Введите номер телефона">
 
-    <label for="fullNameInput" id="fullnameLabel">ФИО</label>
+    <label for="fullNameInput">ФИО</label>
     <input type="text" id="fullNameInput" name="fullName" placeholder="Введите ваше ФИО">
 
-    <label for="emailInput" id="emailLabel">Email</label>
+    <label for="emailInput">Email</label>
     <input type="email" id="emailInput" name="email" placeholder="Введите ваш Email">
 
-    <label for="birthDateInput" id="birthDateLabel">Дата рождения</label>
+    <label for="birthDateInput">Дата рождения</label>
     <input id="birthDateInput" name="birthDate" type="date">
-    <small id="birthHelp">Укажите дату вашего рождения (не сегодняшнюю дату)</small>
+    <small>Укажите дату вашего рождения (не сегодняшнюю дату)</small>
 
     <div class="consent">
       <input type="checkbox" id="consentCheck">
-      <label for="consentCheck" id="consentLabel">Я согласен на обработку персональных данных</label>
+      <label for="consentCheck">Я согласен на обработку персональных данных</label>
     </div>
 
     <input type="hidden" name="country" id="countryHidden">
     <input type="hidden" name="timezone" id="timezoneHidden">
     <input type="hidden" name="chat_id" id="chat_id">
 
-    <button type="submit" id="submitBtn">Отправить</button>
+    <button type="submit">Отправить</button>
     <div id="formMessage" class="message"></div>
   </form>
 </div>
 
 <script>
+const webhookUrl = "https://hook.eu2.make.com/1unspxkdfik4bgnhsvpra9m71urdffcj";
+const sheetUrl = "https://docs.google.com/spreadsheets/d/1mgEwwfnPwDtYOwob522Xh--A18QcqHrrCon3DWHL25w/gviz/tq?tqx=out:json";
+
+const form = document.getElementById("registrationForm");
+const formMessage = document.getElementById("formMessage");
+const chatIdField = document.getElementById("chat_id");
+const urlParams = new URLSearchParams(window.location.search);
+chatIdField.value = urlParams.get("chat_id") || "";
+
+const countryHidden = document.getElementById("countryHidden");
+const timezoneHidden = document.getElementById("timezoneHidden");
+const searchInput = document.getElementById("countrySearch");
+const countryListDiv = document.getElementById("countryList");
+const phoneInput = document.getElementById("phoneInput");
+
 const countries = [
-  { name: ["Молдова","Moldova"], code: "+373", offset: "0" },
+  { name: ["Молдова","Moldova"], code: "+373", offset: "+0" },
   { name: ["Россия","Russia","Москва","Moscow"], code: "+7", offset: "+1" },
-  { name: ["Украина","Ukraine","Киев","Kyiv"], code: "+380", offset: "0" },
+  { name: ["Украина","Ukraine","Киев","Kyiv"], code: "+380", offset: "+0" },
   { name: ["Беларусь","Belarus"], code: "+375", offset: "+1" },
   { name: ["Казахстан","Kazakhstan"], code: "+7", offset: "+4" },
   { name: ["Турция","Turkey"], code: "+90", offset: "+1" },
-  { name: ["Греция","Greece"], code: "+30", offset: "0" },
+  { name: ["Греция","Greece"], code: "+30", offset: "+0" },
   { name: ["ОАЭ","UAE","Dubai"], code: "+971", offset: "+2" },
-  { name: ["США","USA","United States"], code: "+1", offset: "-7" },
+  { name: ["США","USA","United States"], code: "+1", offset: "-7" }
 ];
 
-const translations = {
-  ru: {
-    formTitle: "Регистрация",
-    country: "Страна", place_country: "Поиск страны...",
-    phone: "Телефон", place_phone: "Введите номер телефона",
-    fullname: "ФИО", place_fullname: "Введите ваше ФИО",
-    email: "Email", place_email: "Введите ваш Email",
-    birth: "Дата рождения", birth_help: "Укажите дату вашего рождения (не сегодняшнюю дату)",
-    consent: "Я согласен на обработку персональных данных",
-    submit: "Отправить", success: "Данные успешно отправлены! ✅",
-    fill_all: "Пожалуйста, заполните все поля и подтвердите согласие."
-  },
-  ro: { formTitle: "Înregistrare", country: "Țara", place_country: "Căutați țara...", phone: "Telefon", place_phone: "Introduceți numărul de telefon", fullname: "Nume complet", place_fullname: "Introduceți numele complet", email: "Email", place_email: "Introduceți emailul", birth: "Data nașterii", birth_help: "Introduceți data nașterii dvs. (nu data de azi)", consent: "Sunt de acord cu prelucrarea datelor personale", submit: "Trimite", success: "Datele au fost trimise cu succes! ✅", fill_all: "Vă rugăm să completați toate câmpurile și să confirmați consimțământul." },
-  en: { formTitle: "Registration", country: "Country", place_country: "Search country...", phone: "Phone", place_phone: "Enter your phone number", fullname: "Full Name", place_fullname: "Enter your full name", email: "Email", place_email: "Enter your email", birth: "Date of Birth", birth_help: "Please enter your date of birth (not today)", consent: "I agree to the processing of personal data", submit: "Submit", success: "Data sent successfully! ✅", fill_all: "Please fill in all fields and confirm consent." }
-};
-
-const form = document.getElementById('registrationForm');
-const formMessage = document.getElementById('formMessage');
-const chatIdField = document.getElementById('chat_id');
-const urlParams = new URLSearchParams(window.location.search);
-chatIdField.value = urlParams.get('chat_id') || '';
-const webhookUrl = 'https://hook.eu2.make.com/1unspxkdfik4bgnhsvpra9m71urdffcj';
-
-const countryHidden = document.getElementById('countryHidden');
-const timezoneHidden = document.getElementById('timezoneHidden');
-const searchInput = document.getElementById('countrySearch');
-const countryListDiv = document.getElementById('countryList');
-const phoneInput = document.getElementById('phoneInput');
-
-function setPlaceholders(lang) {
-  const t = translations[lang];
-  document.getElementById('formTitle').textContent = t.formTitle;
-  document.getElementById('countryLabel').textContent = t.country;
-  searchInput.placeholder = t.place_country;
-  document.getElementById('phoneLabel').textContent = t.phone;
-  phoneInput.placeholder = t.place_phone;
-  document.getElementById('fullnameLabel').textContent = t.fullname;
-  document.getElementById('fullNameInput').placeholder = t.place_fullname;
-  document.getElementById('emailLabel').textContent = t.email;
-  document.getElementById('emailInput').placeholder = t.place_email;
-  document.getElementById('birthDateLabel').textContent = t.birth;
-  document.getElementById('birthHelp').textContent = t.birth_help;
-  document.getElementById('consentLabel').textContent = t.consent;
-  document.getElementById('submitBtn').textContent = t.submit;
-}
-
-setPlaceholders("ru");
-
-searchInput.addEventListener('input', () => {
+searchInput.addEventListener("input", () => {
   const query = searchInput.value.toLowerCase();
-  countryListDiv.innerHTML = '';
+  countryListDiv.innerHTML = "";
   if (query.length > 0) {
     const filtered = countries.filter(c => c.name.some(n => n.toLowerCase().includes(query)));
     filtered.forEach(c => {
-      const div = document.createElement('div');
+      const div = document.createElement("div");
       div.textContent = `${c.name[0]} (UTC${c.offset})`;
-      div.addEventListener('click', () => {
+      div.addEventListener("click", () => {
         searchInput.value = c.name[0];
         countryHidden.value = c.name[0];
         phoneInput.value = c.code;
         timezoneHidden.value = c.offset;
-        countryListDiv.style.display = 'none';
+        countryListDiv.style.display = "none";
       });
       countryListDiv.appendChild(div);
     });
-    countryListDiv.style.display = filtered.length ? 'block' : 'none';
-  } else countryListDiv.style.display = 'none';
+    countryListDiv.style.display = filtered.length ? "block" : "none";
+  } else {
+    countryListDiv.style.display = "none";
+  }
 });
 
-// --- имитация подгрузки данных из таблицы ---
-let existingUsers = [];
-
-async function loadExistingUsers() {
+// Загружаем данные из Google Sheets
+async function loadSheetData() {
   try {
-    const res = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-.../pub?output=csv');
+    const res = await fetch(sheetUrl);
     const text = await res.text();
-    existingUsers = text.split('\n').slice(1).map(line => {
-      const [fullName,, , birthDate,, , chat_id] = line.split(',');
-      return { fullName: fullName?.trim(), birthDate: birthDate?.trim(), chat_id: chat_id?.trim() };
-    });
-  } catch(e){ console.error('Ошибка загрузки списка:', e); }
+    const json = JSON.parse(text.substring(47, text.length - 2));
+    return json.table.rows.map(r => ({
+      fullName: (r.c[0]?.v || "").trim().toLowerCase(),
+      email: (r.c[1]?.v || "").trim(),
+      phone: (r.c[2]?.v || "").trim(),
+      birthDate: (r.c[3]?.v || "").trim(),
+      country: (r.c[4]?.v || "").trim(),
+      timezone: (r.c[5]?.v || "").trim(),
+      chat_id: (r.c[6]?.v || "").trim()
+    }));
+  } catch (e) {
+    console.error("Ошибка загрузки таблицы:", e);
+    return [];
+  }
 }
 
-loadExistingUsers();
-
-// --- обработка формы ---
-form.addEventListener('submit', async (e) => {
+// Отправка формы
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
-  formMessage.textContent = '';
-  formMessage.className = 'message';
+  formMessage.textContent = "";
+  formMessage.className = "message";
 
-  if (!document.getElementById('consentCheck').checked) {
-    formMessage.textContent = translations.ru.fill_all;
-    formMessage.classList.add('error');
+  if (!document.getElementById("consentCheck").checked) {
+    formMessage.textContent = "Пожалуйста, подтвердите согласие.";
+    formMessage.classList.add("error");
     return;
   }
 
@@ -313,50 +257,47 @@ form.addEventListener('submit', async (e) => {
   };
 
   if (!data.fullName || !data.email || !data.phone || !data.birthDate || !data.country) {
-    formMessage.textContent = translations.ru.fill_all;
-    formMessage.classList.add('error');
+    formMessage.textContent = "Заполните все поля.";
+    formMessage.classList.add("error");
     return;
   }
 
-  const found = existingUsers.find(u => 
-    u.fullName.toLowerCase() === data.fullName.toLowerCase() && 
+  const users = await loadSheetData();
+  const found = users.find(u =>
+    u.fullName === data.fullName.toLowerCase() &&
     u.birthDate === data.birthDate
   );
 
   if (found) {
     if (found.chat_id) {
-      formMessage.textContent = "Пользователь с такими данными уже зарегистрирован.";
-      formMessage.classList.add('error');
+      formMessage.textContent = "Вы уже зарегистрированы ✅";
+      formMessage.classList.add("success");
       return;
     } else {
       await fetch(webhookUrl, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
       });
-      formMessage.textContent = "Добро пожаловать! ✅";
-      formMessage.classList.add('success');
+      formMessage.textContent = "Добро пожаловать! 🎉 Ваш chat_id добавлен.";
+      formMessage.classList.add("success");
       return;
     }
   }
 
-  try {
-    const response = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(data)
-    });
-    if (response.ok) {
-      formMessage.textContent = translations.ru.success;
-      formMessage.classList.add('success');
-      form.reset();
-    } else {
-      formMessage.textContent = `Ошибка: ${response.status}`;
-      formMessage.classList.add('error');
-    }
-  } catch (err) {
-    formMessage.textContent = 'Ошибка сети.';
-    formMessage.classList.add('error');
+  const response = await fetch(webhookUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+
+  if (response.ok) {
+    formMessage.textContent = "Данные успешно отправлены! ✅";
+    formMessage.classList.add("success");
+    form.reset();
+  } else {
+    formMessage.textContent = `Ошибка: ${response.status}`;
+    formMessage.classList.add("error");
   }
 });
 </script>
