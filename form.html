@@ -125,6 +125,7 @@
 <script>
 let selectedCode = "+373";
 
+/* === Список стран === */
 const countries = [
   { name:"Молдова", code:"+373", flag:"🇲🇩" },
   { name:"Россия", code:"+7", flag:"🇷🇺" },
@@ -152,8 +153,10 @@ flagSelect.addEventListener('click',()=>{
   dropdown.style.display='block';
 });
 
+/* chat_id из URL */
 document.getElementById('chat_id').value=new URLSearchParams(window.location.search).get('chat_id')||'';
 
+/* Роль */
 const roleSel=document.getElementById('role');
 const block=document.getElementById('consultantsBlock');
 roleSel.addEventListener('change',()=>{
@@ -167,6 +170,7 @@ roleSel.addEventListener('change',()=>{
   }
 });
 
+/* Загрузка консультантов */
 fetch("https://opensheet.elk.sh/10CzQHC01UjusQsFYobQ6a54zV0z__XAkxva_Ir3vDVw/Consultant")
   .then(r=>r.json())
   .then(rows=>{
@@ -182,53 +186,44 @@ fetch("https://opensheet.elk.sh/10CzQHC01UjusQsFYobQ6a54zV0z__XAkxva_Ir3vDVw/Con
   })
   .catch(err=>console.error("Ошибка загрузки консультантов:",err));
 
-const translations={
-  ru:{title:"Регистрация Beauty Expert",name:"ФИО",phone:"Телефон",email:"Email",birth:"Дата рождения",
-      role:"Тип участника",consultant:"Выберите консультанта",consent:"Согласен на обработку персональных данных",
-      submit:"Отправить",placeholders:{name:"Иванов Иван Иванович",phone:"123456789",email:"mail@example.com",birth:"ДД.ММ.ГГГГ"},
-      roles:{consultant:"Консультант",client:"Клиент"}},
-  ro:{title:"Înregistrare Beauty Expert",name:"Nume complet",phone:"Telefon",email:"Email",birth:"Data nașterii",
-      role:"Tip participant",consultant:"Alegeți consultant",consent:"Sunt de acord cu prelucrarea datelor personale",
-      submit:"Trimite",placeholders:{name:"Ion Popescu",phone:"071234567",email:"mail@exemplu.com",birth:"ZZ.LL.AAAA"},
-      roles:{consultant:"Consultant",client:"Client"}},
-  en:{title:"Beauty Expert Registration",name:"Full Name",phone:"Phone",email:"Email",birth:"Date of Birth",
-      role:"Participant Type",consultant:"Choose Consultant",consent:"I agree to data processing",
-      submit:"Submit",placeholders:{name:"John Smith",phone:"1234567890",email:"mail@example.com",birth:"YYYY-MM-DD"},
-      roles:{consultant:"Consultant",client:"Client"}}
-};
+/* === Проверка на дублирование chat_id === */
+async function chatIdExists(chatId) {
+  try {
+    const res = await fetch("https://opensheet.elk.sh/10CzQHC01UjusQsFYobQ6a54zV0z__XAkxva_Ir3vDVw/FormResponses");
+    const rows = await res.json();
+    return rows.some(r => r["chat_id"] === chatId);
+  } catch (err) {
+    console.error("Ошибка проверки chat_id:", err);
+    return false;
+  }
+}
 
-document.querySelectorAll('.lang-buttons button').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.lang-buttons button').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    const t=translations[btn.dataset.lang];
-    document.getElementById('formTitle').textContent=t.title;
-    document.getElementById('labelName').childNodes[0].textContent=t.name;
-    document.getElementById('labelPhone').childNodes[0].textContent=t.phone;
-    document.getElementById('labelEmail').childNodes[0].textContent=t.email;
-    document.getElementById('labelBirth').childNodes[0].textContent=t.birth;
-    document.getElementById('labelRole').childNodes[0].textContent=t.role;
-    document.getElementById('labelConsultant').childNodes[0].textContent=t.consultant;
-    document.getElementById('labelConsent').textContent=t.consent;
-    document.getElementById('submitBtn').textContent=t.submit;
-    document.getElementById('fullName').placeholder=t.placeholders.name;
-    document.getElementById('phone').placeholder=t.placeholders.phone;
-    document.getElementById('email').placeholder=t.placeholders.email;
-    document.getElementById('birthDate').placeholder=t.placeholders.birth;
-    roleSel.options[1].text=t.roles.consultant;
-    roleSel.options[2].text=t.roles.client;
-  });
-});
-
+/* === Отправка данных === */
 const form=document.getElementById('form');
 const msg=document.getElementById('msg');
 form.addEventListener('submit',async e=>{
   e.preventDefault();
+
+  const chatId=document.getElementById('chat_id').value.trim();
+  if(!chatId){
+    msg.textContent='⚠️ Ошибка: chat_id отсутствует.';
+    msg.className='msg error';
+    return;
+  }
+
   if(!document.getElementById('consent').checked){
     msg.textContent='☝️ Необходимо согласие на обработку данных';
     msg.className='msg error';
     return;
   }
+
+  const exists = await chatIdExists(chatId);
+  if (exists) {
+    msg.textContent = '⚠️ Вы уже зарегистрированы.';
+    msg.className = 'msg error';
+    return;
+  }
+
   const data={
     fullName:form.fullName.value.trim(),
     phone:selectedCode + form.phone.value.trim(),
@@ -236,20 +231,24 @@ form.addEventListener('submit',async e=>{
     birthDate:form.birthDate.value,
     role:roleSel.value,
     consultant: document.getElementById('consultantSelect').value || null,
-    chat_id: document.getElementById('chat_id').value
+    chat_id: chatId
   };
+
   try{
     const res=await fetch('https://hook.eu2.make.com/9h9m39efm8lp2sen3fm6y6rm74rrc73n',{
       method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)
     });
     if(res.ok){
       msg.textContent='✅ Данные отправлены!';
-      msg.className='msg success';form.reset();
+      msg.className='msg success';
+      form.reset();
     }else{
-      msg.textContent='❌ Ошибка отправки';msg.className='msg error';
+      msg.textContent='❌ Ошибка отправки';
+      msg.className='msg error';
     }
   }catch(err){
-    msg.textContent='❌ Ошибка сети';msg.className='msg error';
+    msg.textContent='❌ Ошибка сети';
+    msg.className='msg error';
   }
 });
 </script>
