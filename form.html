@@ -2,255 +2,305 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Регистрация Beauty Expert</title>
+<title>Форма регистрации</title>
 <style>
-  :root{
-    --accent:#e75480;          
-    --accent-dark:#c7436a;
-    --bg:#fff0f5;
-    --input:#fff;
-    --text:#333;
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #E5E5E5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
   }
-  body{
-    font-family:'Segoe UI', Tahoma, sans-serif;
-    background:var(--bg);
-    display:flex;justify-content:center;align-items:center;
-    height:100vh;margin:0;
+
+  .form-container {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    padding: 30px 40px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
   }
-  .form-box{
-    background:#fff;border-radius:12px;padding:25px 35px;
-    box-shadow:0 4px 12px rgba(0,0,0,.1);
-    width:100%;max-width:430px;
+
+  h3 {
+    text-align: center;
+    color: #0088CC;
+    margin-bottom: 15px;
   }
-  h2{text-align:center;color:var(--accent);margin-bottom:20px;}
-  label{display:block;margin-bottom:10px;font-weight:500;color:var(--text);}
-  input,select{
-    width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:8px;
-    font-size:15px;background:var(--input);box-sizing:border-box;
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #333333;
   }
-  input:focus,select:focus{
-    outline:none;border-color:var(--accent);box-shadow:0 0 4px rgba(231,84,128,.3);
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="date"],
+  input[type="search"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #CCCCCC;
+    border-radius: 8px;
+    font-size: 15px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
   }
-  .phone-wrapper{
-    display:flex;align-items:center;gap:8px;
+
+  input:focus {
+    outline: none;
+    border-color: #0088CC;
+    box-shadow: 0 0 4px rgba(0,136,204,0.3);
   }
-  .country-flag{
-    display:flex;align-items:center;justify-content:center;
-    width:70px;padding:8px;border:1px solid #ccc;border-radius:8px;
-    cursor:pointer;background:var(--input);
+
+  .country-wrapper {
+    position: relative;
+    width: 100%;
   }
-  .country-dropdown{
-    display:none;position:absolute;background:white;border:1px solid #ccc;
-    max-height:150px;overflow-y:auto;z-index:10;border-radius:6px;width:80px;
+
+  .country-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ccc;
+    max-height: 180px;
+    overflow-y: auto;
+    border-radius: 6px;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    display: none;
   }
-  .country-dropdown div{padding:6px;cursor:pointer;text-align:center;}
-  .country-dropdown div:hover{background:#f0f0f0;}
-  .lang-buttons{
-    display:flex;justify-content:center;gap:10px;margin-bottom:15px;
+
+  .country-list div {
+    padding: 8px;
+    cursor: pointer;
   }
-  .lang-buttons button{
-    flex:1;padding:8px;border:1px solid var(--accent);
-    background:white;color:var(--accent);font-weight:bold;
-    border-radius:6px;cursor:pointer;
+
+  .country-list div:hover {
+    background: #f0f0f0;
   }
-  .lang-buttons button.active{background:var(--accent);color:white;}
-  button[type=submit]{
-    width:100%;padding:12px 0;background:var(--accent);
-    color:#fff;border:none;border-radius:8px;font-size:16px;font-weight:bold;
-    margin-top:15px;cursor:pointer;
+
+  .consent {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
   }
-  button[type=submit]:hover{background:var(--accent-dark);}
-  .msg{margin-top:15px;text-align:center;font-weight:bold;}
-  .msg.success{color:green;} .msg.error{color:darkred;}
-  .hidden{display:none;}
-  .checkbox-container{
-    display:flex;align-items:center;margin-top:10px;font-size:14px;
+
+  .consent input {
+    margin-right: 8px;
   }
-  .checkbox-container input{margin-right:8px;}
+
+  button[type="submit"] {
+    width: 100%;
+    padding: 12px 0;
+    background-color: #0088CC;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+  }
+
+  button[type="submit"]:hover {
+    background-color: #006699;
+  }
+
+  .message {
+    text-align: center;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+
+  .message.success { color: #008800; }
+  .message.error { color: #CC0000; }
 </style>
 </head>
 <body>
-<div class="form-box">
-  <h2 id="formTitle">Регистрация Beauty Expert</h2>
-  <div class="lang-buttons">
-    <button type="button" data-lang="ru" class="active">RU</button>
-    <button type="button" data-lang="ro">RO</button>
-    <button type="button" data-lang="en">EN</button>
-  </div>
-  <form id="form">
-    <label id="labelName">ФИО
-      <input type="text" name="fullName" id="fullName" required placeholder="Иванов Иван Иванович">
-    </label>
-    <label id="labelPhone">Телефон
-      <div class="phone-wrapper">
-        <div class="country-flag" id="flagSelect">🇲🇩 +373</div>
-        <input type="tel" name="phone" id="phone" required placeholder="123456789">
-      </div>
-      <div class="country-dropdown" id="countryDropdown"></div>
-    </label>
-    <label id="labelEmail">Email
-      <input type="email" name="email" id="email" required placeholder="mail@example.com">
-    </label>
-    <label id="labelBirth">Дата рождения
-      <input type="date" name="birthDate" id="birthDate" required placeholder="ДД.ММ.ГГГГ">
-    </label>
-    <label id="labelRole">Тип участника
-      <select id="role" name="role" required>
-        <option value="">--выберите--</option>
-        <option value="consultant">Консультант</option>
-        <option value="client">Клиент</option>
-      </select>
-    </label>
 
-    <div id="consultantsBlock" class="hidden">
-      <label id="labelConsultant">Выберите консультанта
-        <select id="consultantSelect" name="consultant">
-          <option value="">--выберите--</option>
-        </select>
-      </label>
+<div class="form-container">
+  <h3 id="formTitle">Регистрация</h3>
+
+  <form id="registrationForm">
+    <label for="countrySearch">Страна</label>
+    <div class="country-wrapper">
+      <input type="search" id="countrySearch" placeholder="Поиск страны..." autocomplete="off">
+      <div id="countryList" class="country-list"></div>
     </div>
 
-    <div class="checkbox-container">
-      <input type="checkbox" id="consent" required>
-      <label for="consent" id="labelConsent">Согласен на обработку персональных данных</label>
+    <label for="phoneInput">Телефон</label>
+    <input type="tel" id="phoneInput" name="phone" placeholder="Введите номер телефона">
+
+    <label for="fullNameInput">ФИО</label>
+    <input type="text" id="fullNameInput" name="fullName" placeholder="Введите ваше ФИО">
+
+    <label for="emailInput">Email</label>
+    <input type="email" id="emailInput" name="email" placeholder="Введите ваш Email">
+
+    <label for="birthDateInput">Дата рождения</label>
+    <input id="birthDateInput" name="birthDate" type="date">
+    <small>Укажите дату вашего рождения (не сегодняшнюю дату)</small>
+
+    <div class="consent">
+      <input type="checkbox" id="consentCheck">
+      <label for="consentCheck">Я согласен на обработку персональных данных</label>
     </div>
 
+    <input type="hidden" name="country" id="countryHidden">
+    <input type="hidden" name="timezone" id="timezoneHidden">
     <input type="hidden" name="chat_id" id="chat_id">
 
-    <button type="submit" id="submitBtn">Отправить</button>
-    <div id="msg" class="msg"></div>
+    <button type="submit">Отправить</button>
+    <div id="formMessage" class="message"></div>
   </form>
 </div>
 
 <script>
-let selectedCode = "+373";
+const webhookUrl = "https://hook.eu2.make.com/1unspxkdfik4bgnhsvpra9m71urdffcj";
+const sheetUrl = "https://docs.google.com/spreadsheets/d/1mgEwwfnPwDtYOwob522Xh--A18QcqHrrCon3DWHL25w/gviz/tq?tqx=out:json";
 
-/* === Список стран === */
+const form = document.getElementById("registrationForm");
+const formMessage = document.getElementById("formMessage");
+const chatIdField = document.getElementById("chat_id");
+const urlParams = new URLSearchParams(window.location.search);
+chatIdField.value = urlParams.get("chat_id") || "";
+
+const countryHidden = document.getElementById("countryHidden");
+const timezoneHidden = document.getElementById("timezoneHidden");
+const searchInput = document.getElementById("countrySearch");
+const countryListDiv = document.getElementById("countryList");
+const phoneInput = document.getElementById("phoneInput");
+
 const countries = [
-  { name:"Молдова", code:"+373", flag:"🇲🇩" },
-  { name:"Россия", code:"+7", flag:"🇷🇺" },
-  { name:"Украина", code:"+380", flag:"🇺🇦" },
-  { name:"Румыния", code:"+40", flag:"🇷🇴" },
-  { name:"США", code:"+1", flag:"🇺🇸" },
-  { name:"Германия", code:"+49", flag:"🇩🇪" },
-  { name:"Франция", code:"+33", flag:"🇫🇷" }
+  { name: ["Молдова","Moldova"], code: "+373", offset: "+0" },
+  { name: ["Россия","Russia","Москва","Moscow"], code: "+7", offset: "+1" },
+  { name: ["Украина","Ukraine","Киев","Kyiv"], code: "+380", offset: "+0" },
+  { name: ["Беларусь","Belarus"], code: "+375", offset: "+1" },
+  { name: ["Казахстан","Kazakhstan"], code: "+7", offset: "+4" },
+  { name: ["Турция","Turkey"], code: "+90", offset: "+1" },
+  { name: ["Греция","Greece"], code: "+30", offset: "+0" },
+  { name: ["ОАЭ","UAE","Dubai"], code: "+971", offset: "+2" },
+  { name: ["США","USA","United States"], code: "+1", offset: "-7" }
 ];
 
-const flagSelect=document.getElementById('flagSelect');
-const dropdown=document.getElementById('countryDropdown');
-flagSelect.addEventListener('click',()=>{
-  dropdown.innerHTML='';
-  countries.forEach(c=>{
-    const div=document.createElement('div');
-    div.textContent=`${c.flag} ${c.code}`;
-    div.addEventListener('click',()=>{
-      flagSelect.textContent=`${c.flag} ${c.code}`;
-      selectedCode = c.code;
-      dropdown.style.display='none';
+searchInput.addEventListener("input", () => {
+  const query = searchInput.value.toLowerCase();
+  countryListDiv.innerHTML = "";
+  if (query.length > 0) {
+    const filtered = countries.filter(c => c.name.some(n => n.toLowerCase().includes(query)));
+    filtered.forEach(c => {
+      const div = document.createElement("div");
+      div.textContent = `${c.name[0]} (UTC${c.offset})`;
+      div.addEventListener("click", () => {
+        searchInput.value = c.name[0];
+        countryHidden.value = c.name[0];
+        phoneInput.value = c.code;
+        timezoneHidden.value = c.offset;
+        countryListDiv.style.display = "none";
+      });
+      countryListDiv.appendChild(div);
     });
-    dropdown.appendChild(div);
-  });
-  dropdown.style.display='block';
-});
-
-/* chat_id из URL */
-document.getElementById('chat_id').value=new URLSearchParams(window.location.search).get('chat_id')||'';
-
-/* Роль */
-const roleSel=document.getElementById('role');
-const block=document.getElementById('consultantsBlock');
-roleSel.addEventListener('change',()=>{
-  const consultantSelect=document.getElementById('consultantSelect');
-  if(roleSel.value==='client'){
-    block.classList.remove('hidden');
-    consultantSelect.required = true;
-  }else{
-    block.classList.add('hidden');
-    consultantSelect.required = false;
+    countryListDiv.style.display = filtered.length ? "block" : "none";
+  } else {
+    countryListDiv.style.display = "none";
   }
 });
 
-/* Загрузка консультантов */
-fetch("https://opensheet.elk.sh/10CzQHC01UjusQsFYobQ6a54zV0z__XAkxva_Ir3vDVw/Consultant")
-  .then(r=>r.json())
-  .then(rows=>{
-    const select=document.getElementById('consultantSelect');
-    rows.forEach(r=>{
-      if(r["ФИО"]){
-        const opt=document.createElement('option');
-        opt.value=r["ФИО"];
-        opt.textContent=r["ФИО"];
-        select.appendChild(opt);
-      }
-    });
-  })
-  .catch(err=>console.error("Ошибка загрузки консультантов:",err));
-
-/* === Проверка на дублирование chat_id === */
-async function chatIdExists(chatId) {
+// Загружаем данные из Google Sheets
+async function loadSheetData() {
   try {
-    const res = await fetch("https://opensheet.elk.sh/10CzQHC01UjusQsFYobQ6a54zV0z__XAkxva_Ir3vDVw/FormResponses");
-    const rows = await res.json();
-    return rows.some(r => r["chat_id"] === chatId);
-  } catch (err) {
-    console.error("Ошибка проверки chat_id:", err);
-    return false;
+    const res = await fetch(sheetUrl);
+    const text = await res.text();
+    const json = JSON.parse(text.substring(47, text.length - 2));
+    return json.table.rows.map(r => ({
+      fullName: (r.c[0]?.v || "").trim().toLowerCase(),
+      email: (r.c[1]?.v || "").trim(),
+      phone: (r.c[2]?.v || "").trim(),
+      birthDate: (r.c[3]?.v || "").trim(),
+      country: (r.c[4]?.v || "").trim(),
+      timezone: (r.c[5]?.v || "").trim(),
+      chat_id: (r.c[6]?.v || "").trim()
+    }));
+  } catch (e) {
+    console.error("Ошибка загрузки таблицы:", e);
+    return [];
   }
 }
 
-/* === Отправка данных === */
-const form=document.getElementById('form');
-const msg=document.getElementById('msg');
-form.addEventListener('submit',async e=>{
+// Отправка формы
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
+  formMessage.textContent = "";
+  formMessage.className = "message";
 
-  const chatId=document.getElementById('chat_id').value.trim();
-  if(!chatId){
-    msg.textContent='⚠️ Ошибка: chat_id отсутствует.';
-    msg.className='msg error';
+  if (!document.getElementById("consentCheck").checked) {
+    formMessage.textContent = "Пожалуйста, подтвердите согласие.";
+    formMessage.classList.add("error");
     return;
   }
 
-  if(!document.getElementById('consent').checked){
-    msg.textContent='☝️ Необходимо согласие на обработку данных';
-    msg.className='msg error';
-    return;
-  }
-
-  const exists = await chatIdExists(chatId);
-  if (exists) {
-    msg.textContent = '⚠️ Вы уже зарегистрированы.';
-    msg.className = 'msg error';
-    return;
-  }
-
-  const data={
-    fullName:form.fullName.value.trim(),
-    phone:selectedCode + form.phone.value.trim(),
-    email:form.email.value.trim(),
-    birthDate:form.birthDate.value,
-    role:roleSel.value,
-    consultant: document.getElementById('consultantSelect').value || null,
-    chat_id: chatId
+  const data = {
+    fullName: form.fullName.value.trim(),
+    email: form.email.value.trim(),
+    phone: form.phone.value.trim(),
+    birthDate: form.birthDate.value.trim(),
+    country: countryHidden.value,
+    timezone: timezoneHidden.value,
+    chat_id: chatIdField.value
   };
 
-  try{
-    const res=await fetch('https://hook.eu2.make.com/9h9m39efm8lp2sen3fm6y6rm74rrc73n',{
-      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)
-    });
-    if(res.ok){
-      msg.textContent='✅ Данные отправлены!';
-      msg.className='msg success';
-      form.reset();
-    }else{
-      msg.textContent='❌ Ошибка отправки';
-      msg.className='msg error';
+  if (!data.fullName || !data.email || !data.phone || !data.birthDate || !data.country) {
+    formMessage.textContent = "Заполните все поля.";
+    formMessage.classList.add("error");
+    return;
+  }
+
+  const users = await loadSheetData();
+  const found = users.find(u =>
+    u.fullName === data.fullName.toLowerCase() &&
+    u.birthDate === data.birthDate
+  );
+
+  if (found) {
+    if (found.chat_id) {
+      formMessage.textContent = "Вы уже зарегистрированы ✅";
+      formMessage.classList.add("success");
+      return;
+    } else {
+      await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      formMessage.textContent = "Добро пожаловать! 🎉 Ваш chat_id добавлен.";
+      formMessage.classList.add("success");
+      return;
     }
-  }catch(err){
-    msg.textContent='❌ Ошибка сети';
-    msg.className='msg error';
+  }
+
+  const response = await fetch(webhookUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+
+  if (response.ok) {
+    formMessage.textContent = "Данные успешно отправлены! ✅";
+    formMessage.classList.add("success");
+    form.reset();
+  } else {
+    formMessage.textContent = `Ошибка: ${response.status}`;
+    formMessage.classList.add("error");
   }
 });
 </script>
+
 </body>
 </html>
